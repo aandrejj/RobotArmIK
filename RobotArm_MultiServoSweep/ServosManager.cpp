@@ -44,13 +44,6 @@
 	  delay(20);
 	  Serial.println("ServosManager::ServoInitialization:  Robot arm initial position");
 
-	  //servo1PPos = pservo1Pos; //zakladna
-	  //servo2PPos = pservo2Pos; //spodne hnede rameno
-	  //servo3PPos = pservo3Pos; //horne  biela rameno
-	  //servo4PPos = pservo4Pos; //ruka nabok  100 = zhruba vodorovne
-	  //servo5PPos = pservo5Pos; //ruka hore
-	  //servo6PPos = pservo6Pos; //ruka otvorena= 100, zatvorena = 60
-	  
 	  servo01.write(pservo1Pos);
 	  //Serial.println("Servo01 positioned");
 	  //delay(100);

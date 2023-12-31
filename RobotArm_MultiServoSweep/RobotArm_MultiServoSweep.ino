@@ -28,14 +28,6 @@
 
 #define SPEED         60                // degree/s
 
-
-Servo servo01; //zakladna
-Servo servo02; //spodne hnede rameno
-Servo servo03; //horne  biela rameno
-Servo servo04; //ruka nabok  100 = zhruba vodorovne
-Servo servo05; //ruka hore
-Servo servo06; //ruka otvorena= 100, zatvorena = 60
-
 Buttons buttons;
 InverseKinematics inverseKinematics;
 RoboArmTurn roboArmTurn;
@@ -103,26 +95,51 @@ void loop() {
     }
   }
   if(runRobotArm == 2) {
-      Serial.println("loop: Servo movement Start. runRobotArm == 2 ");
+      //Serial.println("loop: Servo movement Start. runRobotArm == 2 ");
       
       if(initializationDone == 1) {
+        //Serial.println("loop: initializationDone == 1");
         if(partialMovementIsDone==true) {
-          targetGripPosition = roboArmTurn.takeNextRoboArmPosition();        
-          partialMovementIsDone = false;
-          currentArmMicrosec = inverseKinematics.moveToPosXYZ(currentGripPosition);
+          Serial.println("loop: partialMovementIsDone==true, starting  roboArmTurn.takeNextRoboArmPosition()");
+          targetGripPosition = roboArmTurn.takeNextRoboArmPosition(); //read next target-position from 'moving script'       
+          if(!targetGripPosition.movesScriptEnd) {
+            
+            partialMovementIsDone = false;
+            
+            Serial.println("loop: before linearRampXYZ.begin(...) currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripOpen)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
+            linearRampXYZ.begin(currentGripPosition, targetGripPosition, 1);
+            linearRampXYZ.setup();
+
+            currentArmMicrosec = inverseKinematics.moveToPosXYZ(currentGripPosition);            
+          } else {
+            Serial.println("loop: movesScriptEnd!!!");
+            runRobotArm = runRobotArm - 1;  // = 2
+          }
+          
         } else {
-          currentArmAngles = servosManager.updateCurrentAngles(currentArmAngles);
-          currentArmMicrosec = inverseKinematics.moveToAngle((double)currentArmAngles.baseAngle, (double)currentArmAngles.arm1Angle, (double)currentArmAngles.arm2Angle, (int)currentArmAngles.gripSpinAngle, (int)currentArmAngles.gripTiltAngle, (double)currentArmAngles.gripAngle);
-          //ToDo Here: add param like currentArmAngles or currentArmMiliseconds
+          currentGripPosition = linearRampXYZ.update();
+          currentArmMicrosec = inverseKinematics.moveToPosXYZ(currentGripPosition);
+          //currentArmAngles = servosManager.updateCurrentAngles(currentArmAngles);
+          //currentArmMicrosec = inverseKinematics.moveToAngle((double)currentArmAngles.baseAngle, (double)currentArmAngles.arm1Angle, (double)currentArmAngles.arm2Angle, (int)currentArmAngles.gripSpinAngle, (int)currentArmAngles.gripTiltAngle, (double)currentArmAngles.gripAngle);
+          Serial.println("loop: after linearRampXYZ.update() currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripOpen)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
+
+          if(linearRampXYZ.rampOnce.rampIsFinished) {
+            partialMovementIsDone = true;
+          }
         }
-        servosManager.updateServos(currentArmMicrosec);   // update servos according to InverseKinematics Values
-        delay(10);       // lazy way to limit update to 100 Hz
+        if(!targetGripPosition.movesScriptEnd) {
+          
+          servosManager.updateServos(currentArmMicrosec);   // send pulses to servos.  update servos according to InverseKinematics Values
+          //delay(10);       // lazy way to limit update to 100 Hz
+        } else {
+          Serial.println("loop: delay(100)  @ End.");
+          delay(100);
+        }  
       }
       
       //mainRoboArmTurn();
-      mainRoboArmUpdate();
-      Serial.println("loop: Servo End.");
-      runRobotArm = runRobotArm - 1;  // = 2
+      //mainRoboArmUpdate();
+      //Serial.println("loop: Servo End.");
   }
   
   

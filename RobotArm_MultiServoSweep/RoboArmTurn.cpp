@@ -33,19 +33,21 @@
 			newGripPosition.gripSpinAngle = 0;
 			newGripPosition.gripTiltAngle = 0;
 			newGripPosition.gripOpen =  0;
-			newGripPosition.movesScriptEnd = false;
+			newGripPosition.movesScriptEnd = true;
 			
 			//return newGripPosition;
 		}
-		Serial.println("takeNextRoboArmPosition: newGripPosition.gripX          = "+ String(newGripPosition.gripX)+",");
+    Serial.println("takeNextRoboArmPosition: newGripPosition = {"+ String(newGripPosition.gripX)+", "+ String(newGripPosition.gripY)+", "+ String(newGripPosition.gripZ)+", "+ String(newGripPosition.gripSpinAngle)+", "+ String(newGripPosition.gripTiltAngle)+", "+ String(newGripPosition.gripOpen)+","+ String(newGripPosition.movesScriptEnd)+"}.");
+    /*
+    Serial.println("takeNextRoboArmPosition: newGripPosition.gripX          = "+ String(newGripPosition.gripX)+",");
 		Serial.println("takeNextRoboArmPosition: newGripPosition.gripY          = "+ String(newGripPosition.gripY)+",");
 		Serial.println("takeNextRoboArmPosition: newGripPosition.gripZ          = "+ String(newGripPosition.gripZ)+",");
 		Serial.println("takeNextRoboArmPosition: newGripPosition.gripSpinAngle  = "+ String(newGripPosition.gripSpinAngle)+",");
 		Serial.println("takeNextRoboArmPosition: newGripPosition.gripTiltAngle  = "+ String(newGripPosition.gripTiltAngle)+",");
 		Serial.println("takeNextRoboArmPosition: newGripPosition.gripOpen       = "+ String(newGripPosition.gripOpen)+",");
 		Serial.println("takeNextRoboArmPosition: newGripPosition.movesScriptEnd = "+ String(newGripPosition.movesScriptEnd)+".");
+    */
 		Serial.println("takeNextRoboArmPosition: End");
 		return newGripPosition;
 	}//---------------------end of takeNextRoboArmPosition-----------------------
 	
-

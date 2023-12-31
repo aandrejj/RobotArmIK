@@ -17,10 +17,14 @@ public:
 		double speed; //milimeters in miliseconds
 		
 		double trajectoryLength;
-		rampDouble myRamp;                               // new int ramp object
+		ramp myRamp;                               // new int ramp object
+    float rampCompletion;       // get current ramp completion percentage [0.-100.]
+    bool rampIsFinished;                          // is the ramp finished
+    bool rampIsRunning;                           // is the ramp running
+
 
 		void rampSetup(double duration, int stepsCount);
-		int rampLoop();
+		double update();
 
 
 private:

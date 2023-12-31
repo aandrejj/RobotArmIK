@@ -5,12 +5,12 @@
 #include <Servo.h>
 
 typedef struct {
-  int gripX;
-  int gripY;
-  int gripZ;
-  int gripSpinAngle;
-  int gripTiltAngle;
-  int gripOpen;
+  double gripX;
+  double gripY;
+  double gripZ;
+  double gripSpinAngle;
+  double gripTiltAngle;
+  double gripOpen;
   bool movesScriptEnd;
 }GripPositionXYZ;
 
