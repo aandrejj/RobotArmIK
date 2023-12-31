@@ -10,16 +10,15 @@
 //         https://github.com/roTechnic/InverseKinematicArm
 //         https://github.com/roTechnic/InverseKinematicArm/blob/main/inverse_kinematics.ino
 //
-//
+//  https://github.com/aandrejj/RobotArmIK/pulls
 
-#include <ServosManager.h>
-#include <InverseKinematics.h>
-#include <Buttons.h>
-#include <ServoRamp.h>
-#include <LinearRampXYZ.h>
-#include <RampOnce.h>
-
-#include <RoboArmTurn.h>
+#include "ServosManager.h"
+#include "InverseKinematics.h"
+#include "Buttons.h"
+#include "ServoRamp.h"
+#include "LinearRampXYZ.h"
+#include "RampOnce.h"
+#include "RoboArmTurn.h"
 
 #include <Arduino.h>                    // needed for PlatformIO
 #include <SoftwareSerial.h>
