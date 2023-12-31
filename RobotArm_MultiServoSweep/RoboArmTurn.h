@@ -13,12 +13,12 @@ class RoboArmTurn {
   public:
 	      //                grip  grip  grip
 		  //{XXX, YYY, ZZZ, tilt, spin,  open }
-    int movesScriptSize = 3;
-		int movesScript[3][6] = {
-			 {  0,   0, 250,    0,    0, 80}
-			,{  0,   0, 250,    0,    0, 50}
+    int movesScriptSize = 4;
+		int movesScript[4][6] = {
+			 {  0,   0, 220,    0,    0, 80}
+			,{  0,   0, 220,    0,    0, 50}
 			,{ 80,  80,  10,    0,    0, 50}
-//			,{100, 100,  10,    0,    0, 50}
+			,{100, 100,  10,    0,    0, 50}
 //			,{100, 100,  10,    0,    0, 20}
 //			,{100, 100,  20,    0,    0, 20}
 //			,{ 80,  80,  20,    0,    0, 20}
