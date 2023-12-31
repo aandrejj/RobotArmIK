@@ -19,13 +19,21 @@ ArmServoMicrosec InverseKinematics::moveToAngle(double b, double a1, double a2, 
   
   ArmServoMicrosec armServoMicrosec; 
   
-  armServoMicrosec.arm1Microsec   = angleToMicroseconds(188 - a1);
-  armServoMicrosec.arm2Microsec   = angleToMicroseconds(a2+101);
   armServoMicrosec.baseMicrosec   = angleToMicroseconds(b+90);
-  armServoMicrosec.griperMicrosec = angleToMicroseconds(g);
-  armServoMicrosec.griperSpinMicrosec = angleToMicroseconds(gripSpinAngle+90);
-  armServoMicrosec.griperTiltMicrosec = angleToMicroseconds(gripTiltAngle);
+  armServoMicrosec.arm1Microsec   = angleToMicroseconds(188-a1);
+  armServoMicrosec.arm2Microsec   = angleToMicroseconds(a2+101);
+  armServoMicrosec.griperMicrosec = angleToMicroseconds(g + 90);
+  armServoMicrosec.griperSpinMicrosec = angleToMicroseconds(gripSpinAngle + 90);
+  armServoMicrosec.griperTiltMicrosec = angleToMicroseconds(gripTiltAngle + 90);
   //armServoMicrosec.movesScriptEnd = movesScriptEnd;
+
+    Serial.println("InverseKinematics::moveToAngle(): b             = "+String(b)            +", baseMicrosec       = "+String(armServoMicrosec.baseMicrosec)+".");
+    Serial.println("InverseKinematics::moveToAngle(): a1            = "+String(a1)           +", arm1Microsec       = "+String(armServoMicrosec.arm1Microsec)+".");
+    Serial.println("InverseKinematics::moveToAngle(): a2            = "+String(a2)           +", arm2Microsec       = "+String(armServoMicrosec.arm2Microsec)+".");
+    Serial.println("InverseKinematics::moveToAngle(): g             = "+String(g)            +", griperMicrosec     = "+String(armServoMicrosec.griperMicrosec)+".");
+    Serial.println("InverseKinematics::moveToAngle(): gripSpinAngle = "+String(gripSpinAngle)+", griperSpinMicrosec = "+String(armServoMicrosec.griperSpinMicrosec)+".");
+    Serial.println("InverseKinematics::moveToAngle(): gripTiltAngle = "+String(gripTiltAngle)+", griperTiltMicrosec = "+String(armServoMicrosec.griperTiltMicrosec)+".");
+    
   return armServoMicrosec;
 }
 

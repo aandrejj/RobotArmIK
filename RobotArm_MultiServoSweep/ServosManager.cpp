@@ -12,6 +12,8 @@
 		//rampServos[servoNumber].updateServo();
 	  //}
 	  //ToDo Here
+    Serial.println("ServosManager::updateServos(): armServoMicrosec:  baseMicrosec = "+String(armServoMicrosec.baseMicrosec)+", arm1Microsec = "+ String(armServoMicrosec.arm1Microsec)+", arm2Microsec = "+String(armServoMicrosec.arm2Microsec)+", griperSpinMicrosec = "+ String(armServoMicrosec.griperSpinMicrosec)+", griperTiltMicrosec = "+String(armServoMicrosec.griperTiltMicrosec)+", griperMicrosec = "+String(armServoMicrosec.griperMicrosec)+"." );
+
 	  servo01.writeMicroseconds(armServoMicrosec.baseMicrosec);
 	  servo02.writeMicroseconds(armServoMicrosec.arm1Microsec);
 	  servo03.writeMicroseconds(armServoMicrosec.arm2Microsec);
@@ -91,4 +93,3 @@
 	  Serial.println("ServosManager::ServoInitialization: Initialization OK.");
 	  return currentServoAngles;
 	}
-
