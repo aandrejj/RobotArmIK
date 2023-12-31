@@ -10,7 +10,7 @@
 //         https://github.com/roTechnic/InverseKinematicArm
 //         https://github.com/roTechnic/InverseKinematicArm/blob/main/inverse_kinematics.ino
 //
-//
+//  https://github.com/aandrejj/RobotArmIK/pulls
 
 #include "ServosManager.h"
 #include "InverseKinematics.h"
