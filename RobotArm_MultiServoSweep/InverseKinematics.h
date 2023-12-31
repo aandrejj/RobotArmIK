@@ -8,11 +8,12 @@
 //#include "ArmServos.h"
 #include "ServosManager.h"
 #include "RoboArmTurn.h"
-
+#include "RampOnce.h"
 
 class InverseKinematics {
 public:
   InverseKinematics();
+  RampOnce rampOnce;
   
   int angleToMicroseconds(double angle);
 

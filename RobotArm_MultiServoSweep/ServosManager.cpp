@@ -12,6 +12,8 @@
 		//rampServos[servoNumber].updateServo();
 	  //}
 	  //ToDo Here
+    Serial.println("ServosManager::updateServos(): armServoMicrosec:  baseMicrosec = "+String(armServoMicrosec.baseMicrosec)+", arm1Microsec = "+ String(armServoMicrosec.arm1Microsec)+", arm2Microsec = "+String(armServoMicrosec.arm2Microsec)+", griperSpinMicrosec = "+ String(armServoMicrosec.griperSpinMicrosec)+", griperTiltMicrosec = "+String(armServoMicrosec.griperTiltMicrosec)+", griperMicrosec = "+String(armServoMicrosec.griperMicrosec)+"." );
+
 	  servo01.writeMicroseconds(armServoMicrosec.baseMicrosec);
 	  servo02.writeMicroseconds(armServoMicrosec.arm1Microsec);
 	  servo03.writeMicroseconds(armServoMicrosec.arm2Microsec);
@@ -44,13 +46,6 @@
 	  delay(20);
 	  Serial.println("ServosManager::ServoInitialization:  Robot arm initial position");
 
-	  //servo1PPos = pservo1Pos; //zakladna
-	  //servo2PPos = pservo2Pos; //spodne hnede rameno
-	  //servo3PPos = pservo3Pos; //horne  biela rameno
-	  //servo4PPos = pservo4Pos; //ruka nabok  100 = zhruba vodorovne
-	  //servo5PPos = pservo5Pos; //ruka hore
-	  //servo6PPos = pservo6Pos; //ruka otvorena= 100, zatvorena = 60
-	  
 	  servo01.write(pservo1Pos);
 	  //Serial.println("Servo01 positioned");
 	  //delay(100);
@@ -98,4 +93,3 @@
 	  Serial.println("ServosManager::ServoInitialization: Initialization OK.");
 	  return currentServoAngles;
 	}
-
