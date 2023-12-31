@@ -35,7 +35,6 @@ Servo servo03; //horne  biela rameno
 Servo servo04; //ruka nabok  100 = zhruba vodorovne
 Servo servo05; //ruka hore
 Servo servo06; //ruka otvorena= 100, zatvorena = 60
-//Servo servos[7];
 
 Buttons buttons;
 InverseKinematics inverseKinematics;
@@ -79,21 +78,6 @@ void setup() {
   //configure pin 2 as an input and enable the internal pull-up resistor
   pinMode(2, INPUT_PULLUP);
   pinMode(13, OUTPUT);
-
-  /*
-  servosInitialPosition.baseAngle      = pservo1Pos; //zakladna
-  servosInitialPosition.arm1Angle      = pservo2Pos; //spodne hnede rameno
-  servosInitialPosition.arm2Angle      = pservo3Pos; //horne  biela rameno
-  servosInitialPosition.gripSpinAngle  = pservo4Pos; //ruka nabok
-  servosInitialPosition.gripTiltAngle  = pservo5Pos; //ruka hore
-  servosInitialPosition.gripAngle      = pservo6Pos; //ruka otvorena
-  servosInitialPosition.movesScriptEnd = false;
-  */
-
- //servosManager.setServos(servo01, servo02, servo03, servo04, servo05, servo06);
- 
-  //char moves[] = "[{\"servoNumber\": 1, \"positionFrom\": 0, \"positionTo\": 180},{\"servoNumber\": 2, \"positionFrom\": 0, \"positionTo\": 180}]";
-  //servoSweepJson(moves,"Method2 text.");
 
 }
 //----------------------end of setup-----------------------------------
@@ -149,9 +133,6 @@ void mainRoboArmUpdate() {
   Serial.println("mainRoboArmUpdate Started. ");
   servosManager.updateServos(currentArmMicrosec);   // update servos according to InverseKinematics Values
   delay(10);       // lazy way to limit update to 100 Hz
-  
-  //ToDo Remove this old mainRoboArmTurn
-  //roboArmTurn.mainRoboArmTurn_old();
   
   Serial.println("mainRoboArmUpdate End OK. ");
 }
