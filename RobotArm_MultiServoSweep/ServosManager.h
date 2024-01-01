@@ -49,11 +49,12 @@ public:
 
 	ServosManager();
 
-	void updateServos(ArmServoMicrosec armServoMicrosec);
+  void updateServos_msec(ArmServoMicrosec armServoMicrosec);
+  void updateServos(ArmServoAngles armServoAngles);
 	
 	ArmServoAngles updateCurrentAngles(ArmServoAngles oldServoAngles);
 	
-	ArmServoAngles ServoInitialization(int pservo1Pos, int pservo2Pos, int pservo3Pos, int pservo4Pos, int pservo5Pos, int pservo6Pos );
+	ArmServoAngles ServoInitialization(int pservo1Pos, int pservo2Pos, int pservo3Pos, int pservo4Pos, int pservo5Pos, int pservo6Pos, int pServo_Min_milisec, int pServo_Max_milisec );
 
 private:
 
