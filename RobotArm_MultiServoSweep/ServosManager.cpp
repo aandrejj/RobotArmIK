@@ -5,14 +5,25 @@
 
 	ServosManager::ServosManager() {
 	}
-	//--------------------updateServos()--------------------------------
+  //--------------------updateServos()--------------------------------
+  void ServosManager::updateServos(ArmServoAngles armServoAngles) {
+    Serial.println("ServosManager::updateServos(): armServoAngles:  baseAngle = "+String(armServoAngles.baseAngle)+", arm1Angle = "+ String(armServoAngles.arm1Angle)+", arm2Angle = "+String(armServoAngles.arm2Angle)+", gripSpinAngle = "+ String(armServoAngles.gripSpinAngle)+", gripTiltAngle = "+String(armServoAngles.gripTiltAngle)+", gripAngle = "+String(armServoAngles.gripAngle)+"." );
+
+    servo01.write(armServoAngles.baseAngle);
+    servo02.write(armServoAngles.arm1Angle);
+    servo03.write(armServoAngles.arm2Angle);
+    servo04.write(armServoAngles.gripSpinAngle);
+    servo05.write(armServoAngles.gripTiltAngle);
+    servo06.write(armServoAngles.gripAngle);
+    
+  }
+  //--------------------end of updateServo-----------------------------
+  
+	//--------------------updateServos_msec()--------------------------------
 	//ToDo Here
-	void ServosManager::updateServos(ArmServoMicrosec armServoMicrosec) {
-	  //for (int servoNumber = 1; servoNumber <= 6; servoNumber++) {
-		//rampServos[servoNumber].updateServo();
-	  //}
+	void ServosManager::updateServos_msec(ArmServoMicrosec armServoMicrosec) {
 	  //ToDo Here
-    Serial.println("ServosManager::updateServos(): armServoMicrosec:  baseMicrosec = "+String(armServoMicrosec.baseMicrosec)+", arm1Microsec = "+ String(armServoMicrosec.arm1Microsec)+", arm2Microsec = "+String(armServoMicrosec.arm2Microsec)+", griperSpinMicrosec = "+ String(armServoMicrosec.griperSpinMicrosec)+", griperTiltMicrosec = "+String(armServoMicrosec.griperTiltMicrosec)+", griperMicrosec = "+String(armServoMicrosec.griperMicrosec)+"." );
+    Serial.println("ServosManager::updateServos_msec(): armServoMicrosec:  baseMicrosec = "+String(armServoMicrosec.baseMicrosec)+", arm1Microsec = "+ String(armServoMicrosec.arm1Microsec)+", arm2Microsec = "+String(armServoMicrosec.arm2Microsec)+", griperSpinMicrosec = "+ String(armServoMicrosec.griperSpinMicrosec)+", griperTiltMicrosec = "+String(armServoMicrosec.griperTiltMicrosec)+", griperMicrosec = "+String(armServoMicrosec.griperMicrosec)+"." );
 
 	  servo01.writeMicroseconds(armServoMicrosec.baseMicrosec);
 	  servo02.writeMicroseconds(armServoMicrosec.arm1Microsec);
@@ -22,7 +33,7 @@
 	  servo06.writeMicroseconds(armServoMicrosec.griperMicrosec);
 	  
 	}
-	 //--------------------end of updateServo-----------------------------
+	//--------------------end of updateServo_msec-----------------------------
 
 	ArmServoAngles ServosManager::updateCurrentAngles(ArmServoAngles oldServoAngles) {
 		Serial.println("updateCurrentAngles: Started");
@@ -33,19 +44,31 @@
 	}
 
 	//---------------SevoInitialization----------------------------------
-	ArmServoAngles ServosManager::ServoInitialization(int pservo1Pos, int pservo2Pos, int pservo3Pos, int pservo4Pos, int pservo5Pos, int pservo6Pos ) {
+	ArmServoAngles ServosManager::ServoInitialization(int pservo1Pos, int pservo2Pos, int pservo3Pos, int pservo4Pos, int pservo5Pos, int pservo6Pos, int pServo_Min_milisec, int pServo_Max_milisec) {
 	  Serial.println("ServosManager::ServoInitialization: Initialization started");
 	  delay(201);
-	  servo01.attach( 5, 460 ,2400); //servo01.attach( 5,460 ,2400); 
-	  servo02.attach( 6, 460 ,2400);
-	  servo03.attach( 7, 460 ,2400);
-	  servo04.attach( 8, 460 ,2400);
-	  servo05.attach( 9, 460 ,2400);
-	  servo06.attach(10, 460 ,2400);
+   //https://www.arduino.cc/reference/en/libraries/servo/writemicroseconds/
+   //value of 1000 is fully counter-clockwise, 2000 is fully clockwise, and 1500 is in the middle.
+   //so that servos often respond to values between 700 and 2300.
+    servo01.attach( 5); //zakladna
+    servo02.attach( 6);//spodne hnede rameno
+    servo03.attach( 7);//horne  biela rameno
+    servo04.attach( 8);//ruka nabok  100 = zhruba vodorovne
+    servo05.attach( 9);//ruka hore
+    servo06.attach(10);//ruka otvorena= 100, zatvorena = 60
+
+    /*
+	  servo01.attach( 5, pServo_Min_milisec ,pServo_Max_milisec); //zakladna
+	  servo02.attach( 6, pServo_Min_milisec ,pServo_Max_milisec);//spodne hnede rameno
+	  servo03.attach( 7, pServo_Min_milisec ,pServo_Max_milisec);//horne  biela rameno
+	  servo04.attach( 8, pServo_Min_milisec ,pServo_Max_milisec);//ruka nabok  100 = zhruba vodorovne
+	  servo05.attach( 9, pServo_Min_milisec ,pServo_Max_milisec);//ruka hore
+	  servo06.attach(10, pServo_Min_milisec ,pServo_Max_milisec);//ruka otvorena= 100, zatvorena = 60
+    */
 	  Serial.println("ServosManager::ServoInitialization: Servos attached");
 	  delay(20);
 	  Serial.println("ServosManager::ServoInitialization:  Robot arm initial position");
-
+  
 	  servo01.write(pservo1Pos);
 	  //Serial.println("Servo01 positioned");
 	  //delay(100);
@@ -69,8 +92,9 @@
 	  servo06.write(pservo6Pos);
 	  //Serial.println("Servo06 positioned");
 	  //delay(100);
-	  
+   
 	  Serial.println("ServosManager::ServoInitialization: Servos positioned to default positions");
+    
 	  
 	  ArmServoAngles currentServoAngles;
 	  
@@ -82,14 +106,6 @@
 	  currentServoAngles.gripAngle      = pservo6Pos; //ruka otvorena
 	  currentServoAngles.movesScriptEnd = false;
 
-	  // ToDo : Remove this (down)
-	  //RoboArmTurn::servoCurrentPos[1] = pservo1Pos;
-	  //RoboArmTurn::servoCurrentPos[2] = pservo2Pos;
-	  //RoboArmTurn::servoCurrentPos[3] = pservo3Pos;
-	  //RoboArmTurn::servoCurrentPos[4] = pservo4Pos;
-	  //RoboArmTurn::servoCurrentPos[5] = pservo5Pos;
-	  //RoboArmTurn::servoCurrentPos[6] = pservo6Pos;
-	  
 	  Serial.println("ServosManager::ServoInitialization: Initialization OK.");
 	  return currentServoAngles;
 	}

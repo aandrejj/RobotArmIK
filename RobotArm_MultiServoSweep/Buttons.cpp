@@ -16,22 +16,22 @@ int Buttons::onButton2Clicked(int lastAction) {
       switch (lastAction) {
         case 0:
           newAction = 1;
-          Serial.println("Buttons::onButton2Clicked: case 0: newAction => 1");
+          Serial.println("Buttons::onButton2Clicked: case 0: newAction => 1---------------------------------------------------------------------------");
           break;
           
         case 1:
           newAction = 2;
-          Serial.println("Buttons::onButton2Clicked: case 1: newAction => 2");
+          Serial.println("Buttons::onButton2Clicked: case 1: newAction => 2---------------------------------------------------------------------------");
           break;
           
         case 2:
           newAction = 3;
-          Serial.println("Buttons::onButton2Clicked: case 2: newAction => 3");
+          Serial.println("Buttons::onButton2Clicked: case 2: newAction => 3---------------------------------------------------------------------------");
           break;
           
         case 3:
           newAction = 3;
-          Serial.println("Buttons::onButton2Clicked: case 3: newAction => 3");
+          Serial.println("Buttons::onButton2Clicked: case 3: newAction => 3---------------------------------------------------------------------------");
           break;
           
         default:

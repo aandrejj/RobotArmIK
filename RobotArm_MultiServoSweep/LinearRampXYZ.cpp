@@ -24,9 +24,6 @@ static volatile unsigned int rampTotalStepsCount = 100;              // number o
     LinearRampXYZ::toPos = toPos;
     LinearRampXYZ::currentPos = fromPos;
 
-    //int gripSpinAngle;
-    //int gripTiltAngle;
-    //int gripOpen;
 		LinearRampXYZ::distances.gripX = double(toPos.gripX - fromPos.gripX);
 		LinearRampXYZ::distances.gripY = double(toPos.gripY - fromPos.gripY);
 		LinearRampXYZ::distances.gripZ = double(toPos.gripZ - fromPos.gripZ);
