@@ -8,6 +8,7 @@
 #include <ArduinoJson.h>  //https://arduinojson.org/   https://arduinojson.org/v6/api/jsonarray/
 #include <SoftwareSerial.h>
 #include "ServosManager.h"
+//#define DEBUG         //extensive logging
 
 class RoboArmTurn {
   public:

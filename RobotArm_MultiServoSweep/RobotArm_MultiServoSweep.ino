@@ -28,13 +28,12 @@
 #include <Ramp.h>
 #include <ArduinoJson.h>  //https://arduinojson.org/   https://arduinojson.org/v6/api/jsonarray/
 
-#define SPEED         60                // degree/s
-
 #define SERVO_MIN_MILISEC   460                // https://www.arduino.cc/reference/en/libraries/servo/writemicroseconds/
 #define SERVO_MAX_MILISEC  2400                // value of 1000 is fully counter-clockwise, 2000 is fully clockwise, and 1500 is in the middle.
                                                // ..so that servos often respond to values between 700 and 2300.
-#define SPEED         60                // degree/s
-
+#define SPEED         30.0                // not a [m/s] but [mm/s]
+//#define DEBUG         //debug logging
+#define BRIEF_LOG     //just a few logs
 
 Buttons buttons;
 InverseKinematics inverseKinematics;
@@ -69,14 +68,19 @@ int servo6PPos = 80; //ruka otvorena= 100, zatvorena = 60
 //----------------------setup-------------------------------------------
 void setup() {
   // Open serial communications and wait for port to open:
-  //Serial.begin(19200);
-  Serial.begin(9600);
+    Serial.begin(115200);
+  //Serial.begin( 19200);
+  //Serial.begin(  9600);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
-  Serial.println("RobotArm_servoSweep  Started--------------------------------------------------------");
-  Serial.println();
+  #ifdef DEBUG 
+    Serial.println("RobotArm_servoSweep  Started--------------------------------------------------------");
+  #endif
+  #ifdef DEBUG 
+    Serial.println(); 
+  #endif
   //configure pin 2 as an input and enable the internal pull-up resistor
   pinMode(2, INPUT_PULLUP);
   pinMode(13, OUTPUT);
@@ -98,7 +102,9 @@ void loop() {
   
   if(runRobotArm == 1) {
     if (initializationDone == 0) {
-      Serial.println("loop: Servo Initialization. runRobotArm == 0");
+      #ifdef DEBUG 
+		    Serial.println("loop: Servo Initialization. runRobotArm == 0");
+      #endif
       startArmAngles = servosManager.ServoInitialization(servo1PPos, servo2PPos, servo3PPos, servo4PPos, servo5PPos, servo6PPos,SERVO_MIN_MILISEC ,SERVO_MAX_MILISEC );
       currentGripPosition = inverseKinematics.convertAngleToPosXYZ(startArmAngles);      
       currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
@@ -114,14 +120,18 @@ void loop() {
       if(initializationDone == 1) {
         //Serial.println("loop: initializationDone == 1");
         if(partialMovementIsDone==true) {
-          Serial.println("loop: partialMovementIsDone==true, starting  roboArmTurn.takeNextRoboArmPosition()");
+          #ifdef DEBUG 
+			      Serial.println("loop: partialMovementIsDone==true, starting  roboArmTurn.takeNextRoboArmPosition()");
+          #endif
           targetGripPosition = roboArmTurn.takeNextRoboArmPosition(); //read next target-position from 'moving script'       
           if(!targetGripPosition.movesScriptEnd) {
             
             partialMovementIsDone = false;
             
-            Serial.println("loop: before linearRampXYZ.begin(...) currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripOpen)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
-            linearRampXYZ.begin(currentGripPosition, targetGripPosition, 1);
+            #ifdef DEBUG 
+				      Serial.println("loop: before linearRampXYZ.begin(...) currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripOpen)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
+            #endif
+            linearRampXYZ.begin(currentGripPosition, targetGripPosition, SPEED);
             linearRampXYZ.setup();
 
             //currentArmMicrosec = inverseKinematics.moveToPosXYZ(currentGripPosition);
@@ -136,7 +146,9 @@ void loop() {
           currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
           //currentArmMicrosec = inverseKinematics.moveToPosXYZ(currentGripPosition);
           //currentArmMicrosec = inverseKinematics.moveToAngle((double)currentArmAngles.baseAngle, (double)currentArmAngles.arm1Angle, (double)currentArmAngles.arm2Angle, (int)currentArmAngles.gripSpinAngle, (int)currentArmAngles.gripTiltAngle, (double)currentArmAngles.gripAngle);
-          Serial.println("loop: after linearRampXYZ.update() currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripOpen)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
+          #ifdef DEBUG 
+			      Serial.println("loop: after linearRampXYZ.update() currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripOpen)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
+          #endif
 
           if(linearRampXYZ.rampOnce.rampIsFinished) {
             partialMovementIsDone = true;
@@ -148,12 +160,11 @@ void loop() {
           servosManager.updateServos(currentArmAngles);   // send pulses to servos.  update servos according to InverseKinematics Values
           //delay(10);       // lazy way to limit update to 100 Hz
         } else {
-          Serial.println("loop: delay(100)  @ End.");
+          #ifdef DEBUG 
+			      Serial.println("loop: delay(100)  @ End.");
+          #endif
           delay(100);
         }  
       }      
-      //Serial.println("loop: Servo End.");
-  }
-  
-  
+  }  
 }// ----------end of loop-------------------------------------------

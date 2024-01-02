@@ -7,8 +7,10 @@
 	}
 	//-----------------takeNextRoboArmPosition------------------------------------
 	GripPositionXYZ RoboArmTurn::takeNextRoboArmPosition() {
-		Serial.println("takeNextRoboArmPosition: Started");
-		Serial.println("takeNextRoboArmPosition: movesScriptIndex = "+ String(movesScriptIndex)+".");
+		#ifdef DEBUG 
+		  Serial.println("takeNextRoboArmPosition: Started");
+		  Serial.println("takeNextRoboArmPosition: movesScriptIndex = "+ String(movesScriptIndex)+".");
+    #endif
 		//Serial.println(movesScriptIndex);
 		
 		GripPositionXYZ newGripPosition;
@@ -37,7 +39,9 @@
 			
 			//return newGripPosition;
 		}
-    Serial.println("takeNextRoboArmPosition: newGripPosition = {"+ String(newGripPosition.gripX)+", "+ String(newGripPosition.gripY)+", "+ String(newGripPosition.gripZ)+", "+ String(newGripPosition.gripSpinAngle)+", "+ String(newGripPosition.gripTiltAngle)+", "+ String(newGripPosition.gripOpen)+","+ String(newGripPosition.movesScriptEnd)+"}.");
+    #if defined(DEBUG) || defined(BRIEF_LOG) 
+	  Serial.println("takeNextRoboArmPosition: newGripPosition = {"+ String(newGripPosition.gripX)+", "+ String(newGripPosition.gripY)+", "+ String(newGripPosition.gripZ)+", "+ String(newGripPosition.gripSpinAngle)+", "+ String(newGripPosition.gripTiltAngle)+", "+ String(newGripPosition.gripOpen)+","+ String(newGripPosition.movesScriptEnd)+"}.");
+    #endif
     /*
     Serial.println("takeNextRoboArmPosition: newGripPosition.gripX          = "+ String(newGripPosition.gripX)+",");
 		Serial.println("takeNextRoboArmPosition: newGripPosition.gripY          = "+ String(newGripPosition.gripY)+",");
@@ -47,7 +51,9 @@
 		Serial.println("takeNextRoboArmPosition: newGripPosition.gripOpen       = "+ String(newGripPosition.gripOpen)+",");
 		Serial.println("takeNextRoboArmPosition: newGripPosition.movesScriptEnd = "+ String(newGripPosition.movesScriptEnd)+".");
     */
-		Serial.println("takeNextRoboArmPosition: End");
+		#ifdef DEBUG 
+		  Serial.println("takeNextRoboArmPosition: End");
+        #endif
 		return newGripPosition;
 	}//---------------------end of takeNextRoboArmPosition-----------------------
 	

@@ -3,6 +3,7 @@
 
 #include "Arduino.h"
 #include <Servo.h>
+//#define DEBUG         //extensive logging
 
 typedef struct {
   double gripX;
