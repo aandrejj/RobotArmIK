@@ -26,7 +26,7 @@
 		newGripPosition.movesScriptEnd = false;
 		
 		movesScriptIndex++;
-		if( movesScriptIndex >= movesScriptSize) {
+		if( movesScriptIndex > movesScriptSize) {
 			movesScriptEnd = true;
 			
 			newGripPosition.gripX = 0;
