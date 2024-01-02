@@ -56,7 +56,6 @@ int runRobotArm = 0;
 int initializationDone = 0;
 boolean previousSensorVal = LOW;
 bool partialMovementIsDone =  true;//false;
-//boolean previousButtonsVals[3] = {LOW, LOW, LOW};
 
 ArmServoAngles servosInitialPosition;
 int servo1PPos = 90; //zakladna
@@ -115,17 +114,13 @@ void loop() {
     }
   }
   if(runRobotArm == 2) {
-      //Serial.println("loop: Servo movement Start. runRobotArm == 2 ");
-      
       if(initializationDone == 1) {
-        //Serial.println("loop: initializationDone == 1");
         if(partialMovementIsDone==true) {
           #ifdef DEBUG 
 			      Serial.println("loop: partialMovementIsDone==true, starting  roboArmTurn.takeNextRoboArmPosition()");
           #endif
           targetGripPosition = roboArmTurn.takeNextRoboArmPosition(); //read next target-position from 'moving script'       
           if(!targetGripPosition.movesScriptEnd) {
-            
             partialMovementIsDone = false;
             
             #ifdef DEBUG 
@@ -134,7 +129,6 @@ void loop() {
             linearRampXYZ.begin(currentGripPosition, targetGripPosition, SPEED);
             linearRampXYZ.setup();
 
-            //currentArmMicrosec = inverseKinematics.moveToPosXYZ(currentGripPosition);
             currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
           } else {
             Serial.println("loop: movesScriptEnd!!!");
@@ -144,13 +138,12 @@ void loop() {
         } else {
           currentGripPosition = linearRampXYZ.update();
           currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
-          //currentArmMicrosec = inverseKinematics.moveToPosXYZ(currentGripPosition);
-          //currentArmMicrosec = inverseKinematics.moveToAngle((double)currentArmAngles.baseAngle, (double)currentArmAngles.arm1Angle, (double)currentArmAngles.arm2Angle, (int)currentArmAngles.gripSpinAngle, (int)currentArmAngles.gripTiltAngle, (double)currentArmAngles.gripAngle);
           #ifdef DEBUG 
 			      Serial.println("loop: after linearRampXYZ.update() currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripOpen)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
           #endif
 
           if(linearRampXYZ.rampOnce.rampIsFinished) {
+            Serial.println("loop: linearRampXYZ.rampOnce.rampIsFinished. partialMovementIsDone = true");
             partialMovementIsDone = true;
           }
         }
