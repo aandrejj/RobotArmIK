@@ -4,6 +4,7 @@
 #ifndef Buttons_h
 #define Buttons_h
 #include "Arduino.h"
+//#define DEBUG         //extensive logging
 
 class Buttons {
   public:

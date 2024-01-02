@@ -5,6 +5,8 @@
 #include <Ramp.h>                             // include library
 #include "ServosManager.h"
 #include "RampOnce.h"
+//#define DEBUG         //debug logging
+#define BRIEF_LOG     //just a few logs
 
 //https://github.com/siteswapjuggler/RAMP/tree/master
 
@@ -13,7 +15,7 @@ class LinearRampXYZ {
 public:
 		LinearRampXYZ();
 		int lastValue;
-		int duration;
+		double duration;
 
 		double speed; //milimeters in miliseconds
 		double speedX;
@@ -26,9 +28,10 @@ public:
 
 		double trajectoryLength;
 
-    double incrementX;
-    double incrementY;
-    double incrementZ;
+    //double incrementX;
+    //double incrementY;
+    //double incrementZ;
+    GripPositionXYZ increment;
 
 		
 		RampOnce rampOnce;                               // new int ramp object

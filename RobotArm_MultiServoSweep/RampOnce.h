@@ -3,6 +3,8 @@
 
 #include "Arduino.h"
 #include <Ramp.h>                             // include library
+//#define DEBUG         //debug logging
+#define BRIEF_LOG     //just a few logs
 
 //https://github.com/siteswapjuggler/RAMP/tree/master
 

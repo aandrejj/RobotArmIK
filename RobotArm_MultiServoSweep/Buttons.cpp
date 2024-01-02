@@ -51,9 +51,11 @@ boolean Buttons::ButtonHandle(int BtnPin) {
   if (ButtonPressed == LOW) {
     digitalWrite(13, LOW);
     if (previousButtonsVals[BtnPin] == HIGH) {
-      Serial.print("Buttons::ButtonHandle: Button ");
-      Serial.print(BtnPin);
-      Serial.println(" released");
+      #ifdef DEBUG 
+        Serial.print("Buttons::ButtonHandle: Button ");
+        Serial.print(BtnPin);
+        Serial.println(" released");
+      #endif
       BtnClicked = true;
     }
 

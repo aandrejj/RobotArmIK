@@ -9,6 +9,7 @@
 #include "ServosManager.h"
 #include "RoboArmTurn.h"
 #include "RampOnce.h"
+//#define DEBUG         //extensive logging
 
 class InverseKinematics {
 public:
