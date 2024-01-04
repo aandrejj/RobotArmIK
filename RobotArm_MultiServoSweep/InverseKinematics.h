@@ -25,12 +25,12 @@ public:
   
   int microsecondsToAngle(double microseconds);
 
-  ArmServoMicrosec moveToAngle_msec(double b, double a1, double a2, int gripSpinAngle, int gripTiltAngle, double g);
-  ArmServoAngles   moveToAngle     (double b, double a1, double a2, int gripSpinAngle, int gripTiltAngle, double g);
+  ArmServoMicrosec moveToAngle_msec(double b, double a1, double a2, int gripSpinAngle, int gripTiltAngle, double g, double duration);
+  ArmServoAngles   moveToAngle     (double b, double a1, double a2, int gripSpinAngle, int gripTiltAngle, double g, double duration);
 
   //ArmServoMicrosec moveToAngle2(ArmServoAngles armServoAngles);
 
-  ArmServoAngles moveToPos(double x, double y, double z, int gripSpinAngle, int gripTiltAngle, double g, bool movesScriptEnd);
+  ArmServoAngles moveToPos(double x, double y, double z, int gripSpinAngle, int gripTiltAngle, double g, bool movesScriptEnd, double duration);
 
   ArmServoAngles moveToPosXYZ(GripPositionXYZ positionXYZ);
   

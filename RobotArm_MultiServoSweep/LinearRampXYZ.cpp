@@ -7,20 +7,16 @@ static volatile unsigned int rampTotalStepsCount = 100;              // number o
 	LinearRampXYZ::LinearRampXYZ() {
 	}
 	
-	void LinearRampXYZ::begin(GripPositionXYZ fromPos, GripPositionXYZ toPos, double pSpeed) {
-		if(pSpeed==0) {
-			LinearRampXYZ::speed = 1000;
-		} else {
-			LinearRampXYZ::speed = pSpeed; // not a [m/s] but [mm/s]
-		}
-
+  void LinearRampXYZ::begin(GripPositionXYZ fromPos, GripPositionXYZ toPos) {
+		LinearRampXYZ::duration = toPos.duration;
+   
     #if defined(DEBUG) || defined(BRIEF_LOG) 
-	  Serial.println("LinearRampXYZ::begin(): LinearRampXYZ::speed = "+String(LinearRampXYZ::speed)+".");
+	  Serial.println("LinearRampXYZ::begin(): LinearRampXYZ::duration = "+String(LinearRampXYZ::duration)+".");
     #endif
 
     #if defined(DEBUG) || defined(BRIEF_LOG) 
       Serial.println("LinearRampXYZ::begin(): fromPos = {"+ String(fromPos.gripX)+", "+ String(fromPos.gripY)+", "+ String(fromPos.gripZ)+", "+ String(fromPos.gripSpinAngle)+", "+ String(fromPos.gripTiltAngle)+", "+ String(fromPos.gripWidth)+", end="+ String(fromPos.movesScriptEnd)+"}.");
-      Serial.println("LinearRampXYZ::begin(): toPos   = {"+ String(toPos.gripX)+", "+ String(toPos.gripY)+", "+ String(toPos.gripZ)+", "+ String(toPos.gripSpinAngle)+", "+ String(toPos.gripTiltAngle)+", "+ String(toPos.gripWidth)+",end="+ String(toPos.movesScriptEnd)+"}.");
+      Serial.println("LinearRampXYZ::begin(): toPos   = {"+ String(toPos.gripX)+", "+ String(toPos.gripY)+", "+ String(toPos.gripZ)+", "+ String(toPos.gripSpinAngle)+", "+ String(toPos.gripTiltAngle)+", "+ String(toPos.gripWidth)+"}, duration="+ String(toPos.duration)+", end="+ String(toPos.movesScriptEnd)+".");
     #endif
 
     
@@ -53,11 +49,6 @@ static volatile unsigned int rampTotalStepsCount = 100;              // number o
 	  Serial.println("LinearRampXYZ::begin(): LinearRampXYZ::trajectoryLength = "+String(LinearRampXYZ::trajectoryLength)+".");
     #endif
 		
-		LinearRampXYZ::duration = double(1000 * LinearRampXYZ::trajectoryLength/LinearRampXYZ::speed);  //1000*....  in miliseconds
-    #if defined(DEBUG) || defined(BRIEF_LOG) 
-      Serial.println("LinearRampXYZ::begin(): LinearRampXYZ::duration = "+String(LinearRampXYZ::duration)+".");
-    #endif
-
 		LinearRampXYZ::speeds.gripX = LinearRampXYZ::distances.gripX/LinearRampXYZ::duration;
 		LinearRampXYZ::speeds.gripY = LinearRampXYZ::distances.gripY/LinearRampXYZ::duration;
 		LinearRampXYZ::speeds.gripZ = LinearRampXYZ::distances.gripZ/LinearRampXYZ::duration;

@@ -126,7 +126,7 @@ void loop() {
             #ifdef DEBUG 
 				      Serial.println("loop: before linearRampXYZ.begin(...) currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
             #endif
-            linearRampXYZ.begin(currentGripPosition, targetGripPosition, SPEED);
+            linearRampXYZ.begin(currentGripPosition, targetGripPosition);
             linearRampXYZ.setup();
 
             currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);

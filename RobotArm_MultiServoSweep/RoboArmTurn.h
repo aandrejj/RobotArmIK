@@ -8,24 +8,25 @@
 #include <ArduinoJson.h>  //https://arduinojson.org/   https://arduinojson.org/v6/api/jsonarray/
 #include <SoftwareSerial.h>
 #include "ServosManager.h"
-//#define DEBUG         //extensive logging
+//#define DEBUG         //debug logging
+#define BRIEF_LOG     //just a few logs
 
 class RoboArmTurn {
   public:
 	      //                grip  grip  grip
 		  //{XXX, YYY, ZZZ, tilt, spin,  open }
     int movesScriptSize = 4;
-		int movesScript[4][6] = {
-			 {  0,   0, 200,    0,    0, 80}
-			,{  0,   0, 200,    0,    0, 60}
-      ,{  0,   0, 200,    0,    0, 80}
-			,{ 10,  10, 190,    0,    0, 80}
-//			,{ 10,  10, 190,    0,    0, 80}
-//			,{100, 100,  10,    0,    0, 20}
-//			,{100, 100,  20,    0,    0, 20}
-//			,{ 80,  80,  20,    0,    0, 20}
-//			,{ 80,  80,  10,    0,    0, 20}
-//			,{ 80,  80,  10,    0,    0, 50}
+		int movesScript[4][7] = {
+			 {  0,   0, 200,    0,    0, 80, 3000}
+			,{  0,   0, 200,    0,    0, 60, 3000}
+      ,{  0,   0, 200,    0,    0, 80, 3000}
+			,{ 10,  10, 190,    0,    0, 80, 3000}
+//			,{ 10,  10, 190,    0,    0, 80, 3000}
+//			,{100, 100,  10,    0,    0, 20, 3000}
+//			,{100, 100,  20,    0,    0, 20, 3000}
+//			,{ 80,  80,  20,    0,    0, 20, 3000}
+//			,{ 80,  80,  10,    0,    0, 20, 3000}
+//			,{ 80,  80,  10,    0,    0, 50, 3000}
 		};
 		int movesScriptIndex = 0;
 		bool movesScriptEnd = false;

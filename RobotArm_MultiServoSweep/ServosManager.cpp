@@ -116,6 +116,7 @@
 	  currentServoAngles.gripSpinAngle  = pservo4Pos; //ruka nabok
 	  currentServoAngles.gripTiltAngle  = pservo5Pos; //ruka hore
 	  currentServoAngles.gripAngle      = pservo6Pos; //ruka otvorena
+    currentServoAngles.duration       = 2000;
 	  currentServoAngles.movesScriptEnd = false;
 
 #if defined(DEBUG) || defined(BRIEF_LOG) 
