@@ -22,7 +22,7 @@
 		newGripPosition.gripZ = movesScript[movesScriptIndex][2];
 		newGripPosition.gripSpinAngle = movesScript[movesScriptIndex][3];
 		newGripPosition.gripTiltAngle = movesScript[movesScriptIndex][4];
-		newGripPosition.gripOpen =  movesScript[movesScriptIndex][5];
+		newGripPosition.gripWidth =  movesScript[movesScriptIndex][5];
 		newGripPosition.movesScriptEnd = false;
 		
 		movesScriptIndex++;
@@ -34,13 +34,13 @@
 			newGripPosition.gripZ = 0;
 			newGripPosition.gripSpinAngle = 0;
 			newGripPosition.gripTiltAngle = 0;
-			newGripPosition.gripOpen =  0;
+			newGripPosition.gripWidth =  0;
 			newGripPosition.movesScriptEnd = true;
 			
 			//return newGripPosition;
 		}
     #if defined(DEBUG) || defined(BRIEF_LOG) 
-	  Serial.println("takeNextRoboArmPosition: newGripPosition = {"+ String(newGripPosition.gripX)+", "+ String(newGripPosition.gripY)+", "+ String(newGripPosition.gripZ)+", "+ String(newGripPosition.gripSpinAngle)+", "+ String(newGripPosition.gripTiltAngle)+", "+ String(newGripPosition.gripOpen)+","+ String(newGripPosition.movesScriptEnd)+"}.");
+	  Serial.println("takeNextRoboArmPosition: newGripPosition = {"+ String(newGripPosition.gripX)+", "+ String(newGripPosition.gripY)+", "+ String(newGripPosition.gripZ)+", "+ String(newGripPosition.gripSpinAngle)+", "+ String(newGripPosition.gripTiltAngle)+", "+ String(newGripPosition.gripWidth)+","+ String(newGripPosition.movesScriptEnd)+"}.");
     #endif
     /*
     Serial.println("takeNextRoboArmPosition: newGripPosition.gripX          = "+ String(newGripPosition.gripX)+",");
@@ -48,7 +48,7 @@
 		Serial.println("takeNextRoboArmPosition: newGripPosition.gripZ          = "+ String(newGripPosition.gripZ)+",");
 		Serial.println("takeNextRoboArmPosition: newGripPosition.gripSpinAngle  = "+ String(newGripPosition.gripSpinAngle)+",");
 		Serial.println("takeNextRoboArmPosition: newGripPosition.gripTiltAngle  = "+ String(newGripPosition.gripTiltAngle)+",");
-		Serial.println("takeNextRoboArmPosition: newGripPosition.gripOpen       = "+ String(newGripPosition.gripOpen)+",");
+		Serial.println("takeNextRoboArmPosition: newGripPosition.gripWidth       = "+ String(newGripPosition.gripWidth)+",");
 		Serial.println("takeNextRoboArmPosition: newGripPosition.movesScriptEnd = "+ String(newGripPosition.movesScriptEnd)+".");
     */
 		#ifdef DEBUG 

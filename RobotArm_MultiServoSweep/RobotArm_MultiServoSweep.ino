@@ -124,7 +124,7 @@ void loop() {
             partialMovementIsDone = false;
             
             #ifdef DEBUG 
-				      Serial.println("loop: before linearRampXYZ.begin(...) currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripOpen)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
+				      Serial.println("loop: before linearRampXYZ.begin(...) currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
             #endif
             linearRampXYZ.begin(currentGripPosition, targetGripPosition, SPEED);
             linearRampXYZ.setup();
@@ -139,7 +139,7 @@ void loop() {
           currentGripPosition = linearRampXYZ.update();
           currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
           #ifdef DEBUG 
-			      Serial.println("loop: after linearRampXYZ.update() currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripOpen)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
+			      Serial.println("loop: after linearRampXYZ.update() currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
           #endif
 
           if(linearRampXYZ.rampOnce.rampIsFinished) {

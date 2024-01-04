@@ -3,7 +3,8 @@
 
 #include "Arduino.h"
 #include <Servo.h>
-//#define DEBUG         //extensive logging
+//#define DEBUG         //debug logging
+#define BRIEF_LOG     //just a few logs
 
 typedef struct {
   double gripX;
@@ -11,7 +12,7 @@ typedef struct {
   double gripZ;
   double gripSpinAngle;
   double gripTiltAngle;
-  double gripOpen;
+  double gripWidth;
   bool movesScriptEnd;
 }GripPositionXYZ;
 
@@ -29,9 +30,9 @@ typedef struct {
   int arm1Microsec;
   int arm2Microsec;
   int baseMicrosec;
-  int griperSpinMicrosec;
-  int griperTiltMicrosec;
-  int griperMicrosec;
+  int gripSpinMicrosec;
+  int gripTiltMicrosec;
+  int gripMicrosec;
   bool movesScriptEnd;
 } ArmServoMicrosec;
 
