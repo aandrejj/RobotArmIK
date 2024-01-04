@@ -9,7 +9,9 @@
 #include "ServosManager.h"
 #include "RoboArmTurn.h"
 #include "RampOnce.h"
-//#define DEBUG         //extensive logging
+//#define DEBUG         //debug logging
+#define BRIEF_LOG     //just a few logs
+#define MATH_PI 3.14159265
 
 class InverseKinematics {
 public:

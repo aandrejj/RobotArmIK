@@ -26,15 +26,15 @@
 	void ServosManager::updateServos_msec(ArmServoMicrosec armServoMicrosec) {
 	  //ToDo Here
     #ifdef DEBUG 
-	  Serial.println("ServosManager::updateServos_msec(): armServoMicrosec:  baseMicrosec = "+String(armServoMicrosec.baseMicrosec)+", arm1Microsec = "+ String(armServoMicrosec.arm1Microsec)+", arm2Microsec = "+String(armServoMicrosec.arm2Microsec)+", griperSpinMicrosec = "+ String(armServoMicrosec.griperSpinMicrosec)+", griperTiltMicrosec = "+String(armServoMicrosec.griperTiltMicrosec)+", griperMicrosec = "+String(armServoMicrosec.griperMicrosec)+"." );
+	  Serial.println("ServosManager::updateServos_msec(): armServoMicrosec:  baseMicrosec = "+String(armServoMicrosec.baseMicrosec)+", arm1Microsec = "+ String(armServoMicrosec.arm1Microsec)+", arm2Microsec = "+String(armServoMicrosec.arm2Microsec)+", gripSpinMicrosec = "+ String(armServoMicrosec.gripSpinMicrosec)+", gripTiltMicrosec = "+String(armServoMicrosec.gripTiltMicrosec)+", gripMicrosec = "+String(armServoMicrosec.gripMicrosec)+"." );
     #endif
 
 	  servo01.writeMicroseconds(armServoMicrosec.baseMicrosec);
 	  servo02.writeMicroseconds(armServoMicrosec.arm1Microsec);
 	  servo03.writeMicroseconds(armServoMicrosec.arm2Microsec);
-	  servo04.writeMicroseconds(armServoMicrosec.griperSpinMicrosec);
-	  servo05.writeMicroseconds(armServoMicrosec.griperTiltMicrosec);
-	  servo06.writeMicroseconds(armServoMicrosec.griperMicrosec);
+	  servo04.writeMicroseconds(armServoMicrosec.gripSpinMicrosec);
+	  servo05.writeMicroseconds(armServoMicrosec.gripTiltMicrosec);
+	  servo06.writeMicroseconds(armServoMicrosec.gripMicrosec);
 	  
 	}
 	//--------------------end of updateServo_msec-----------------------------
@@ -50,7 +50,7 @@
 
 	//---------------SevoInitialization----------------------------------
 	ArmServoAngles ServosManager::ServoInitialization(int pservo1Pos, int pservo2Pos, int pservo3Pos, int pservo4Pos, int pservo5Pos, int pservo6Pos, int pServo_Min_milisec, int pServo_Max_milisec) {
-	  #ifdef DEBUG 
+	  #if defined(DEBUG) || defined(BRIEF_LOG) 
 	    Serial.println("ServosManager::ServoInitialization: Initialization started");
       #endif
 	  delay(200);
@@ -103,7 +103,7 @@
 	  //Serial.println("Servo06 positioned");
 	  //delay(100);
    
-	  #ifdef DEBUG 
+	  #if defined(DEBUG) || defined(BRIEF_LOG) 
 	    Serial.println("ServosManager::ServoInitialization: Servos positioned to default positions");
       #endif
     
@@ -118,7 +118,8 @@
 	  currentServoAngles.gripAngle      = pservo6Pos; //ruka otvorena
 	  currentServoAngles.movesScriptEnd = false;
 
-	  #ifdef DEBUG 
+#if defined(DEBUG) || defined(BRIEF_LOG) 
+      Serial.println("ServosManager::ServoInitialization: currentServoAngles:  baseAngle = "+String(currentServoAngles.baseAngle)+", arm1Angle = "+ String(currentServoAngles.arm1Angle)+", arm2Angle = "+String(currentServoAngles.arm2Angle)+", gripSpinAngle = "+ String(currentServoAngles.gripSpinAngle)+", gripTiltAngle = "+String(currentServoAngles.gripTiltAngle)+", gripAngle = "+String(currentServoAngles.gripAngle)+"." );
 	    Serial.println("ServosManager::ServoInitialization: Initialization OK.");
       #endif
 	  return currentServoAngles;

@@ -35,18 +35,18 @@ ArmServoMicrosec InverseKinematics::moveToAngle_msec(double b, double a1, double
   armServoMicrosec.baseMicrosec       = angleToMicroseconds(b+90);
   armServoMicrosec.arm1Microsec       = angleToMicroseconds(100-a1); //angleToMicroseconds(188-a1);
   armServoMicrosec.arm2Microsec       = angleToMicroseconds(a2+101);
-  armServoMicrosec.griperMicrosec     = angleToMicroseconds(g + 90);
-  armServoMicrosec.griperSpinMicrosec = angleToMicroseconds(gripSpinAngle + 100);
-  armServoMicrosec.griperTiltMicrosec = angleToMicroseconds(gripTiltAngle + 90);
+  armServoMicrosec.gripMicrosec     = angleToMicroseconds(g + 90);
+  armServoMicrosec.gripSpinMicrosec = angleToMicroseconds(gripSpinAngle + 100);
+  armServoMicrosec.gripTiltMicrosec = angleToMicroseconds(gripTiltAngle + 90);
   //armServoMicrosec.movesScriptEnd   = movesScriptEnd;
   
   #ifdef DEBUG 
-    Serial.println("InverseKinematics::moveToAngle(): b             = "+String(b)            +", baseMicrosec       = "+String(armServoMicrosec.baseMicrosec)+", _angle = "+String(InverseKinematics::microsecondsToAngle(armServoMicrosec.baseMicrosec))+".");
-    Serial.println("InverseKinematics::moveToAngle(): a1            = "+String(a1)           +", arm1Microsec       = "+String(armServoMicrosec.arm1Microsec)+", _angle = "+String(InverseKinematics::microsecondsToAngle(armServoMicrosec.arm1Microsec))+".");
-    Serial.println("InverseKinematics::moveToAngle(): a2            = "+String(a2)           +", arm2Microsec       = "+String(armServoMicrosec.arm2Microsec)+", _angle = "+String(InverseKinematics::microsecondsToAngle(armServoMicrosec.arm2Microsec))+".");
-    Serial.println("InverseKinematics::moveToAngle(): gripSpinAngle = "+String(gripSpinAngle)+", griperSpinMicrosec = "+String(armServoMicrosec.griperSpinMicrosec)+", _angle = "+String(InverseKinematics::microsecondsToAngle(armServoMicrosec.griperSpinMicrosec))+".");
-    Serial.println("InverseKinematics::moveToAngle(): gripTiltAngle = "+String(gripTiltAngle)+", griperTiltMicrosec = "+String(armServoMicrosec.griperTiltMicrosec)+", _angle = "+String(InverseKinematics::microsecondsToAngle(armServoMicrosec.griperTiltMicrosec))+".");
-    Serial.println("InverseKinematics::moveToAngle(): g             = "+String(g)            +", griperMicrosec     = "+String(armServoMicrosec.griperMicrosec)+", _angle = "+String(InverseKinematics::microsecondsToAngle(armServoMicrosec.griperMicrosec))+".");
+    Serial.println("InverseKinematics::moveToAngle(): b             = "+String(b)            +", baseMicrosec       = "+String(armServoMicrosec.baseMicrosec)+".");
+    Serial.println("InverseKinematics::moveToAngle(): a1            = "+String(a1)           +", arm1Microsec       = "+String(armServoMicrosec.arm1Microsec)+".");
+    Serial.println("InverseKinematics::moveToAngle(): a2            = "+String(a2)           +", arm2Microsec       = "+String(armServoMicrosec.arm2Microsec)+".");
+    Serial.println("InverseKinematics::moveToAngle(): gripSpinAngle = "+String(gripSpinAngle)+", gripSpinMicrosec = "+String(armServoMicrosec.gripSpinMicrosec)+".");
+    Serial.println("InverseKinematics::moveToAngle(): gripTiltAngle = "+String(gripTiltAngle)+", gripTiltMicrosec = "+String(armServoMicrosec.gripTiltMicrosec)+".");
+    Serial.println("InverseKinematics::moveToAngle(): g             = "+String(g)            +", gripMicrosec     = "+String(armServoMicrosec.gripMicrosec)+".");
   #endif
 
   return armServoMicrosec;
@@ -78,19 +78,23 @@ ArmServoAngles InverseKinematics::moveToAngle(double b, double a1, double a2, in
   return armServoAngles;
 }
 
-
+//----------------------------------------------------------------------------------------
 GripPositionXYZ InverseKinematics::convertAngleToPosXYZ(ArmServoAngles armServoAngles) {
 	GripPositionXYZ gripPosition;
-	  #ifdef DEBUG
-	    Serial.println("InverseKinematics::convertAngleToPosXYZ: Started");
+	  #if defined(DEBUG) || defined(BRIEF_LOG) 
+	    Serial.println("InverseKinematics::convertAngleToPosXYZ'back': Started"); 
+      Serial.println("InverseKinematics::convertAngleToPosXYZ'back': input params: armServoAngles:  baseAngle = "+String(armServoAngles.baseAngle)+", arm1Angle = "+ String(armServoAngles.arm1Angle)+", arm2Angle = "+String(armServoAngles.arm2Angle)+", gripSpinAngle = "+ String(armServoAngles.gripSpinAngle)+", gripTiltAngle = "+String(armServoAngles.gripTiltAngle)+", gripAngle = "+String(armServoAngles.gripAngle)+"." );
     #endif
+    
+    gripPosition.gripWidth = 2 * (cos(armServoAngles.gripAngle * (3.1415926/180)) * 30);
 
+    
     gripPosition.gripX = 10;
     gripPosition.gripY = 0;
     gripPosition.gripZ = 120;
     gripPosition.gripSpinAngle = 0;
     gripPosition.gripTiltAngle = 0;
-    gripPosition.gripOpen = 80;
+    /* gripPosition.gripWidth = 80; */
     gripPosition.movesScriptEnd = false;
 	
 	  //ToDo Add math to evaluate all params correctly!!!
@@ -101,9 +105,9 @@ GripPositionXYZ InverseKinematics::convertAngleToPosXYZ(ArmServoAngles armServoA
 	
 	//double phi = armServoAngles.arm1Angle - armServoAngles.arm2Angle;
 	//double theta =
-	  #ifdef DEBUG 
-	    Serial.print("InverseKinematics::convertAngleToPosXYZ:  gripPosition (X,Y,Z) = ("+String(gripPosition.gripX)+", "+String(gripPosition.gripY)+", "+String(gripPosition.gripZ)+" ), ");
-      Serial.print("Angles (Spin, Tilt, Open) = ("+String(gripPosition.gripSpinAngle) +", "+String(gripPosition.gripTiltAngle)+", "+String(gripPosition.gripOpen)+"), ");
+	  #if defined(DEBUG) || defined(BRIEF_LOG)  
+	    Serial.print("InverseKinematics::convertAngleToPosXYZ 'back' output:  gripPosition (X,Y,Z) = ("+String(gripPosition.gripX)+", "+String(gripPosition.gripY)+", "+String(gripPosition.gripZ)+" ), ");
+      Serial.print("Angles (Spin, Tilt, Open) = ("+String(gripPosition.gripSpinAngle) +", "+String(gripPosition.gripTiltAngle)+", "+String(gripPosition.gripWidth)+"), ");
       Serial.println("movesScriptEnd = "+String(gripPosition.movesScriptEnd));
     #endif
 	  #ifdef DEBUG 
@@ -111,12 +115,14 @@ GripPositionXYZ InverseKinematics::convertAngleToPosXYZ(ArmServoAngles armServoA
     #endif
 	return gripPosition;
 }
+//----------------------------------------------------------------------------------------
 
 ArmServoAngles InverseKinematics::moveToPosXYZ(GripPositionXYZ positionXYZ) {
-	return InverseKinematics::moveToPos((double)positionXYZ.gripX, (double)positionXYZ.gripY, (double)positionXYZ.gripZ, (int)positionXYZ.gripSpinAngle, (int)positionXYZ.gripTiltAngle, (double)positionXYZ.gripOpen, (bool)positionXYZ.movesScriptEnd);
+	return InverseKinematics::moveToPos((double)positionXYZ.gripX, (double)positionXYZ.gripY, (double)positionXYZ.gripZ, (int)positionXYZ.gripSpinAngle, (int)positionXYZ.gripTiltAngle, (double)positionXYZ.gripWidth, (bool)positionXYZ.movesScriptEnd);
 }
-ArmServoAngles InverseKinematics::moveToPos(double x, double y, double z, int gripSpinAngle, int gripTiltAngle, double g, bool movesScriptEnd) {
-  double b = atan2(y,x) * (180 / 3.1415); // base angle
+//----------------------------------------------------------------------------------------
+ArmServoAngles InverseKinematics::moveToPos(double x, double y, double z, int gripSpinAngle, int gripTiltAngle, double gripWidth, bool movesScriptEnd) {
+  double b = atan2(y,x) * (180 / MATH_PI); // base angle
 
   double l = sqrt(x*x + y*y); // x and y extension 
   
@@ -124,15 +130,27 @@ ArmServoAngles InverseKinematics::moveToPos(double x, double y, double z, int gr
 
   double h = sqrt (l*l + z*z);
 
-  double phi = atan(z/l) * (180 / 3.1415);
+  double phi = atan(z/l) * (180 / MATH_PI);
 
-  double theta = acos((h/2)/120) * (180 / 3.1415);    //120 mm = length of one part of arm
+  double theta = acos((h/2)/125) * (180 / MATH_PI);    //120 mm = length of first and second part of arm (120 = brown and 120 = white arm with black bracket)
   
   double a1 = phi + theta; // angle for first part of the arm
-  double a2 = phi - theta; // angle for second part of the arm
+  //double a2 = phi - theta; // angle for second part of the arm
+  double a2 =  (0 - a1) + theta;
 
   //double newGripTiltAngle = gripTiltAngle - a1 + (180 -a2);
   double newGripTiltAngle = gripTiltAngle;
 
-  return moveToAngle(b, a1, a2, gripSpinAngle, newGripTiltAngle, g);
+  double gripAngle = acos((gripWidth/2)/30 * (180 / MATH_PI));
+
+  #ifdef DEBUG 
+    Serial.println("InverseKinematics::moveToPos(): b             = "+String(b )+".");
+    Serial.println("InverseKinematics::moveToPos(): a1            = "+String(a1)+".");
+    Serial.println("InverseKinematics::moveToPos(): a2            = "+String(a2)+".");
+    Serial.println("InverseKinematics::moveToPos(): gripSpinAngle = "+String(gripSpinAngle)+".");
+    Serial.println("InverseKinematics::moveToPos(): gripTiltAngle = "+String(gripTiltAngle)+".");
+    Serial.println("InverseKinematics::moveToPos(): gripAngle     = "+String(gripAngle)+".");
+  #endif
+  
+  return moveToAngle(b, a1, a2, gripSpinAngle, newGripTiltAngle, gripAngle);
 }
