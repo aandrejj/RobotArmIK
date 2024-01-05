@@ -59,11 +59,15 @@ bool partialMovementIsDone =  true;//false;
 
 ArmServoAngles servosInitialPosition;
 int servo1PPos = 90; //zakladna
-int servo2PPos = 100;//spodne hnede rameno
+int servo2PPos = 110;//spodne hnede rameno
 int servo3PPos = 0; //horne  biela rameno
 int servo4PPos = 100;//ruka nabok  100 = zhruba vodorovne
 int servo5PPos = 85; //ruka hore
-int servo6PPos = 80; //ruka otvorena= 100, zatvorena = 60
+int servo6PPos = 90; //ruka otvorena= 100, zatvorena = 60
+
+unsigned long currentMillis;
+unsigned long previousMillis;
+
 //----------------------setup-------------------------------------------
 void setup() {
   // Open serial communications and wait for port to open:
@@ -105,7 +109,10 @@ void loop() {
 		    Serial.println("loop: Servo Initialization. runRobotArm == 0");
       #endif
       startArmAngles = servosManager.ServoInitialization(servo1PPos, servo2PPos, servo3PPos, servo4PPos, servo5PPos, servo6PPos,SERVO_MIN_MILISEC ,SERVO_MAX_MILISEC );
-      currentGripPosition = inverseKinematics.convertAngleToPosXYZ(startArmAngles);      
+      currentGripPosition = inverseKinematics.convertAngleToPosXYZ(startArmAngles);
+      #if defined(DEBUG) || defined(BRIEF_LOG)
+        Serial.println("loop():  currentGripPosition (X,Y,Z) = ("+String(currentGripPosition.gripX)+", "+String(currentGripPosition.gripY)+", "+String(currentGripPosition.gripZ)+" ), Angles (Spin, Tilt, Open) = ("+String(currentGripPosition.gripSpinAngle) +", "+String(currentGripPosition.gripTiltAngle)+", "+String(currentGripPosition.gripWidth)+"), duration="+String(currentGripPosition.duration)+", movesScriptEnd = "+String(currentGripPosition.movesScriptEnd));     
+      #endif
       currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
       servosManager.updateServos(currentArmAngles);   // send pulses to servos.  update servos according to InverseKinematics Values
       initializationDone = 1;
@@ -115,48 +122,53 @@ void loop() {
   }
   if(runRobotArm == 2) {
       if(initializationDone == 1) {
-        if(partialMovementIsDone==true) {
-          #ifdef DEBUG 
-			      Serial.println("loop: partialMovementIsDone==true, starting  roboArmTurn.takeNextRoboArmPosition()");
-          #endif
-          targetGripPosition = roboArmTurn.takeNextRoboArmPosition(); //read next target-position from 'moving script'       
-          if(!targetGripPosition.movesScriptEnd) {
-            partialMovementIsDone = false;
-            
+        currentMillis = millis();
+        if (currentMillis - previousMillis >= 10) {  // start timed loop
+          previousMillis = currentMillis;
+          
+          if(partialMovementIsDone==true) {
             #ifdef DEBUG 
-				      Serial.println("loop: before linearRampXYZ.begin(...) currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
+  			      Serial.println("loop: partialMovementIsDone==true, starting  roboArmTurn.takeNextRoboArmPosition()");
             #endif
-            linearRampXYZ.begin(currentGripPosition, targetGripPosition);
-            linearRampXYZ.setup();
-
-            currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
+            targetGripPosition = roboArmTurn.takeNextRoboArmPosition(); //read next target-position from 'moving script'       
+            if(!targetGripPosition.movesScriptEnd) {
+              partialMovementIsDone = false;
+              
+              #ifdef DEBUG 
+  				      Serial.println("loop: before linearRampXYZ.begin(...) currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
+              #endif
+              linearRampXYZ.begin(currentGripPosition, targetGripPosition);
+              linearRampXYZ.setup();
+  
+              currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
+            } else {
+              Serial.println("loop: movesScriptEnd!!!");
+              runRobotArm = runRobotArm - 1;  // = 2
+            }
+            
           } else {
-            Serial.println("loop: movesScriptEnd!!!");
-            runRobotArm = runRobotArm - 1;  // = 2
+            currentGripPosition = linearRampXYZ.update();
+            currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
+            #ifdef DEBUG 
+  			      Serial.println("loop: after linearRampXYZ.update() currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
+            #endif
+  
+            if(linearRampXYZ.rampOnce.rampIsFinished) {
+              Serial.println("loop: linearRampXYZ.rampOnce.rampIsFinished. partialMovementIsDone = true");
+              partialMovementIsDone = true;
+            }
           }
-          
-        } else {
-          currentGripPosition = linearRampXYZ.update();
-          currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
-          #ifdef DEBUG 
-			      Serial.println("loop: after linearRampXYZ.update() currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
-          #endif
-
-          if(linearRampXYZ.rampOnce.rampIsFinished) {
-            Serial.println("loop: linearRampXYZ.rampOnce.rampIsFinished. partialMovementIsDone = true");
-            partialMovementIsDone = true;
+            if(!targetGripPosition.movesScriptEnd) {
+            
+            //servosManager.updateServos(currentArmMicrosec);   // send pulses to servos.  update servos according to InverseKinematics Values
+            servosManager.updateServos(currentArmAngles);   // send pulses to servos.  update servos according to InverseKinematics Values
+            //delay(10);       // lazy way to limit update to 100 Hz
+          } else {
+            #ifdef DEBUG 
+  			      Serial.println("loop: delay(100)  @ End.");
+            #endif
+            //delay(100);
           }
-        }
-        if(!targetGripPosition.movesScriptEnd) {
-          
-          //servosManager.updateServos(currentArmMicrosec);   // send pulses to servos.  update servos according to InverseKinematics Values
-          servosManager.updateServos(currentArmAngles);   // send pulses to servos.  update servos according to InverseKinematics Values
-          //delay(10);       // lazy way to limit update to 100 Hz
-        } else {
-          #ifdef DEBUG 
-			      Serial.println("loop: delay(100)  @ End.");
-          #endif
-          delay(100);
         }  
       }      
   }  

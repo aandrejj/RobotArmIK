@@ -42,7 +42,7 @@
 			//return newGripPosition;
 		}
     #if defined(DEBUG) || defined(BRIEF_LOG) 
-	  Serial.println("takeNextRoboArmPosition: newGripPosition = {"+ String(newGripPosition.gripX)+", "+ String(newGripPosition.gripY)+", "+ String(newGripPosition.gripZ)+", "+ String(newGripPosition.gripSpinAngle)+", "+ String(newGripPosition.gripTiltAngle)+", "+ String(newGripPosition.gripWidth)+"}, duration = "+ String(newGripPosition.duration)+", end = "+ String(newGripPosition.movesScriptEnd)+".");
+	    Serial.println("takeNextRoboArmPosition: newGripPosition = {"+ String(newGripPosition.gripX)+", "+ String(newGripPosition.gripY)+", "+ String(newGripPosition.gripZ)+", "+ String(newGripPosition.gripSpinAngle)+", "+ String(newGripPosition.gripTiltAngle)+", "+ String(newGripPosition.gripWidth)+"}, duration = "+ String(newGripPosition.duration)+", end = "+ String(newGripPosition.movesScriptEnd)+".");
     #endif
     /*
     Serial.println("takeNextRoboArmPosition: newGripPosition.gripX          = "+ String(newGripPosition.gripX)+",");
