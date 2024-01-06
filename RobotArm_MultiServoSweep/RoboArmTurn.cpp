@@ -7,7 +7,10 @@
 	}
 	//-----------------takeNextRoboArmPosition------------------------------------
 	GripPositionXYZ RoboArmTurn::takeNextRoboArmPosition() {
-		#ifdef DEBUG 
+    #if defined(BRIEF_LOG)  
+      Serial.println("--------------------------------------------------");
+		#elif DEBUG 
+      Serial.println("--------------------------------------------------");
 		  Serial.println("takeNextRoboArmPosition: Started");
 		  Serial.println("takeNextRoboArmPosition: movesScriptIndex = "+ String(movesScriptIndex)+".");
     #endif
@@ -41,6 +44,9 @@
 			
 			//return newGripPosition;
 		}
+   if(newGripPosition.gripWidth > 60) {
+    Serial.println("takeNextRoboArmPosition:  WARNING: gripWidth = "+String(newGripPosition.gripWidth)+". Is bigger than maxGripWidth = 60. Truncating gripWith to 60...");
+   }
     #if defined(DEBUG) || defined(BRIEF_LOG) 
 	    Serial.println("takeNextRoboArmPosition: newGripPosition = {"+ String(newGripPosition.gripX)+", "+ String(newGripPosition.gripY)+", "+ String(newGripPosition.gripZ)+", "+ String(newGripPosition.gripSpinAngle)+", "+ String(newGripPosition.gripTiltAngle)+", "+ String(newGripPosition.gripWidth)+"}, duration = "+ String(newGripPosition.duration)+", end = "+ String(newGripPosition.movesScriptEnd)+".");
     #endif
