@@ -16,18 +16,21 @@ class RoboArmTurn {
   public:
 	      //                grip  grip  grip
 		  //{XXX, YYY, ZZZ, tilt, spin,  open }  
-    int movesScriptSize = 3;
-		int movesScript[3][7] = {
+    int movesScriptSize = 5;
+    int movesScript[5][7] = {
 			 {  10,   0, 120,    0,    0, 60, 300}  // navrat na basePosition
-//			,{  10,   0, 200,    0,    0, 60, 2000}
-//      ,{  10,   0, 120,    0,    0, 60, 2000}
-//      ,{  10,  10, 120,    0,    0, 60, 2000}
-//      ,{  10, -10, 120,    0,    0, 60, 2000}
-//      ,{  10,   0, 120,    0,    0, 60, 2000} // navrat na basePosition
-      ,{  98,   0, 120,    0,    0, 60, 2000} 
+			,{  10,   0, 200,    0,    0, 60, 2000}
       ,{  10,   0, 120,    0,    0, 60, 2000} // navrat na basePosition
-//      ,{  10,   0, 120,    0,    0, 50, 2000}
-//      ,{  10,   0, 120,    0,    0, 60, 2000}
+      ,{  10,   0,  90,    0,    0, 60, 2000}
+      ,{  10,   0, 120,    0,    0, 60, 2000} // navrat na basePosition
+//      ,{  10,   5, 120,    0,    0, 60, 1000}
+//      ,{  10,  -5, 120,    0,    0, 60, 2000}
+//      ,{  10,   0, 120,    0,    0, 60, 1000} // navrat na basePosition
+//      ,{  10,   0, 200,    0,    0, 60, 2000} 
+//      ,{  10,   0, 200,    0,    0, 50, 2000}
+//      ,{  10,   0, 200,    0,    0, 60, 2000}
+//      ,{  10,   0, 120,    0,    0, 60, 2000} // navrat na basePosition
+
 //			,{100, 100,  10,    0,    0, 20, 3000}
 //			,{100, 100,  20,    0,    0, 20, 3000}
 //			,{ 80,  80,  20,    0,    0, 20, 3000}
@@ -43,7 +46,8 @@ class RoboArmTurn {
 		RoboArmTurn();
 		//GripPositionXYZ updateRoboArmPositionsByScript();
 		GripPositionXYZ takeNextRoboArmPosition();
-
+    GripPositionXYZ resetMovescript();
+      
 		void servoSweepJson(char moves[], int runRobotArm, String text );
 		void mainRoboArmTurn_old();
 		void servoSweep(int servoNumber,  int positionFrom, int positionTo, int moveDelay, String text );

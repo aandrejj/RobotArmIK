@@ -69,8 +69,8 @@ ArmServoAngles InverseKinematics::moveToAngle(double b, double a1, double a2, do
   ArmServoAngles armServoAngles; 
   armServoAngles.baseAngle     = (b + 90);
   armServoAngles.arm1Angle     = (160 - a1);
-  armServoAngles.arm2Angle     = (-50 + a2);
-  armServoAngles.gripAngle     = (g + 60);
+  armServoAngles.arm2Angle     = (-40 + a2);
+  armServoAngles.gripAngle     = (g + 30);
   armServoAngles.gripSpinAngle = (gripSpinAngle + 90);
   armServoAngles.gripTiltAngle = (gripTiltAngle + 90);
   armServoAngles.duration = duration;
@@ -138,8 +138,9 @@ ArmServoAngles InverseKinematics::moveToPosXYZ(GripPositionXYZ positionXYZ) {
   double a1 = phi + theta; // angle for first part of the arm
   //double a2 = phi - theta; // angle for second part of the arm
   double a2 =  (0 - a1) + theta;
+  //double a2 =  theta - a1;
 
-  ////double newGripTiltAngle = gripTiltAngle - a1 + (180 -a2);
+  double newGripTiltAngle = positionXYZ.gripTiltAngle + (0.7 * a1) -(0.9 * a2) + 30;
   //double newGripTiltAngle = positionXYZ.gripTiltAngle;
 
   double gripAngle = asin((positionXYZ.gripWidth/2)/30) * (180 / MATH_PI);
@@ -153,5 +154,5 @@ ArmServoAngles InverseKinematics::moveToPosXYZ(GripPositionXYZ positionXYZ) {
     Serial.println("InverseKinematics::moveToPos(): gripAngle     = "+String(gripAngle)+".");
   #endif
   
-  return moveToAngle(b, a1, a2, positionXYZ.gripSpinAngle, positionXYZ.gripTiltAngle, gripAngle, positionXYZ.duration);
+  return moveToAngle(b, a1, a2, positionXYZ.gripSpinAngle, newGripTiltAngle, gripAngle, positionXYZ.duration);
 }

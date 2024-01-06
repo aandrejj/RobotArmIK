@@ -30,7 +30,7 @@ int Buttons::onButton2Clicked(int lastAction) {
           break;
           
         case 3:
-          newAction = 3;
+          newAction = 2;
           Serial.println("Buttons::onButton2Clicked: case 3: newAction => 3---------------------------------------------------------------------------");
           break;
           

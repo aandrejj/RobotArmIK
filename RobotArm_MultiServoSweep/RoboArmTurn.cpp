@@ -64,4 +64,20 @@
         #endif
 		return newGripPosition;
 	}//---------------------end of takeNextRoboArmPosition-----------------------
-	
+
+    //-----------------resetMovescript------------------------------------
+  GripPositionXYZ RoboArmTurn::resetMovescript() {
+    #if defined(BRIEF_LOG)  
+      Serial.println("--------------------------------------------------");
+    #elif DEBUG 
+      Serial.println("--------------------------------------------------");
+      Serial.println("resetMovescript: Started");
+    #endif
+    
+    movesScriptIndex = 0;
+    
+    #if defined(DEBUG) || defined(BRIEF_LOG)  
+      Serial.println("resetMovescript: movesScriptIndex = "+ String(movesScriptIndex)+".");
+    #endif
+    return RoboArmTurn::takeNextRoboArmPosition();
+  }
