@@ -44,7 +44,7 @@ public:
     GripPositionXYZ distances;
     GripPositionXYZ speeds;
     
-    void begin(GripPositionXYZ fromPos, GripPositionXYZ toPos, double pSpeed);
+    void begin(GripPositionXYZ fromPos, GripPositionXYZ toPos);
 		void setup();
 		GripPositionXYZ update();
 

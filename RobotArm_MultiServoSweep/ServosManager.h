@@ -13,16 +13,18 @@ typedef struct {
   double gripSpinAngle;
   double gripTiltAngle;
   double gripWidth;
+  double duration;
   bool movesScriptEnd;
 }GripPositionXYZ;
 
 typedef struct {
-  int baseAngle;
-  int arm1Angle;
-  int arm2Angle;
-  int gripSpinAngle;
-  int gripTiltAngle;
-  int gripAngle;
+  double baseAngle;
+  double arm1Angle;
+  double arm2Angle;
+  double gripSpinAngle;
+  double gripTiltAngle;
+  double gripAngle;
+  double duration;
   bool movesScriptEnd;
 } ArmServoAngles;
 
@@ -33,6 +35,7 @@ typedef struct {
   int gripSpinMicrosec;
   int gripTiltMicrosec;
   int gripMicrosec;
+  double duration;
   bool movesScriptEnd;
 } ArmServoMicrosec;
 
