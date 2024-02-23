@@ -144,6 +144,8 @@ void loop() {
             } else {
               Serial.println("loop: movesScriptEnd!!!");
               runRobotArm = runRobotArm - 1;  // = 2
+              targetGripPosition = roboArmTurn.resetMovescript();
+              
             }
             
           } else {
@@ -158,7 +160,7 @@ void loop() {
               partialMovementIsDone = true;
             }
           }
-            if(!targetGripPosition.movesScriptEnd) {
+          if(!targetGripPosition.movesScriptEnd) {
             
             //servosManager.updateServos(currentArmMicrosec);   // send pulses to servos.  update servos according to InverseKinematics Values
             servosManager.updateServos(currentArmAngles);   // send pulses to servos.  update servos according to InverseKinematics Values

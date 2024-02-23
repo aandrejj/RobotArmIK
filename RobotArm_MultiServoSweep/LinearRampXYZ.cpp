@@ -6,7 +6,7 @@ static volatile unsigned int rampTotalStepsCount = 100;              // number o
  
 	LinearRampXYZ::LinearRampXYZ() {
 	}
-	
+	//------------------------------------begin----------------------------------------------
   void LinearRampXYZ::begin(GripPositionXYZ fromPos, GripPositionXYZ toPos) {
 		LinearRampXYZ::duration = toPos.duration;
    
@@ -24,10 +24,10 @@ static volatile unsigned int rampTotalStepsCount = 100;              // number o
     LinearRampXYZ::toPos = toPos;
     LinearRampXYZ::currentPos = fromPos;
 
-  	LinearRampXYZ::distances.gripX = double(toPos.gripX - fromPos.gripX);
-  	LinearRampXYZ::distances.gripY = double(toPos.gripY - fromPos.gripY);
-  	LinearRampXYZ::distances.gripZ = double(toPos.gripZ - fromPos.gripZ);
-  
+    LinearRampXYZ::distances.gripX = double(toPos.gripX - fromPos.gripX);
+    LinearRampXYZ::distances.gripY = double(toPos.gripY - fromPos.gripY);
+    LinearRampXYZ::distances.gripZ = double(toPos.gripZ - fromPos.gripZ);
+
     LinearRampXYZ::distances.gripSpinAngle = double(toPos.gripSpinAngle - fromPos.gripSpinAngle);
     LinearRampXYZ::distances.gripTiltAngle = double(toPos.gripTiltAngle - fromPos.gripTiltAngle);
     LinearRampXYZ::distances.gripWidth      = double(toPos.gripWidth      - fromPos.gripWidth);
@@ -58,17 +58,21 @@ static volatile unsigned int rampTotalStepsCount = 100;              // number o
     LinearRampXYZ::speeds.gripWidth     = LinearRampXYZ::distances.gripWidth      / LinearRampXYZ::duration;
     
     #if defined(DEBUG) || defined(BRIEF_LOG) 
-      Serial.println("LinearRampXYZ::begin(): LinearRampXYZ::speeds.grip X,Y,Z,Spin,Tilt,Open   = {"+ String(LinearRampXYZ::speeds.gripX)+", "+ String(LinearRampXYZ::speeds.gripY)+", "+ String(LinearRampXYZ::speeds.gripSpinAngle)+"}. AnglesSpeed  "+ String(LinearRampXYZ::speeds.gripSpinAngle)+", "+ String(LinearRampXYZ::speeds.gripTiltAngle)+", "+ String(LinearRampXYZ::speeds.gripWidth)+".");
+      Serial.println("LinearRampXYZ::begin(): LinearRampXYZ::speeds.grip X,Y,Z,Spin,Tilt,Width   = {"+ String(LinearRampXYZ::speeds.gripX)+", "+ String(LinearRampXYZ::speeds.gripY)+", "+ String(LinearRampXYZ::speeds.gripSpinAngle)+"}, GripSpeed  "+ String(LinearRampXYZ::speeds.gripSpinAngle)+", "+ String(LinearRampXYZ::speeds.gripTiltAngle)+", "+ String(LinearRampXYZ::speeds.gripWidth)+".");
 	  #endif
 	}
+  //------------------------------------end of begin----------------------------------------------
+  //------------------------------------setup----------------------------------------------
 	void LinearRampXYZ::setup() {
     LinearRampXYZ::rampOnce.rampSetup(LinearRampXYZ::duration, rampTotalStepsCount);  //void RampOnce::rampSetup(double duration, int stepsCount)
 	}
+  //------------------------------------end of setup----------------------------------------------
 	
+  //------------------------------------update----------------------------------------------
 	GripPositionXYZ LinearRampXYZ::update() {
 	  LinearRampXYZ::currentStep = LinearRampXYZ::rampOnce.update();                  // store updated value
 
-    LinearRampXYZ::increment.gripX = (double)(LinearRampXYZ::rampOnce.rampCompletion * LinearRampXYZ::distances.gripX/100.00);
+    LinearRampXYZ::increment.gripX = (double)(LinearRampXYZ::rampOnce.rampCompletion * LinearRampXYZ::distances.gripX/100.00);  // /100 -> convert rampCompletion from % to interval [0-1]
     LinearRampXYZ::increment.gripY = (double)(LinearRampXYZ::rampOnce.rampCompletion * LinearRampXYZ::distances.gripY/100.00);
     LinearRampXYZ::increment.gripZ = (double)(LinearRampXYZ::rampOnce.rampCompletion * LinearRampXYZ::distances.gripZ/100.00);
 
@@ -77,9 +81,8 @@ static volatile unsigned int rampTotalStepsCount = 100;              // number o
     LinearRampXYZ::increment.gripWidth      = (double)(LinearRampXYZ::rampOnce.rampCompletion * LinearRampXYZ::distances.gripWidth     /100.00);
     
 
-    #ifdef DEBUG 
-      Serial.print("LinearRampXYZ::begin(): LinearRampXYZ::increment X,Y,Z   = {"+ String(LinearRampXYZ::increment.gripX)+", "+ String(LinearRampXYZ::increment.gripY)+", "+ String(LinearRampXYZ::increment.gripZ)+"}, ");
-      Serial.println("Angles (Spin, Tilt, Open) = ("+String(LinearRampXYZ::increment.gripSpinAngle) +", "+String(LinearRampXYZ::increment.gripTiltAngle)+", "+String(LinearRampXYZ::increment.gripWidth)+"), ");
+    #if defined(DEBUG) 
+      Serial.println("LinearRampXYZ::update(): LinearRampXYZ::increment X,Y,Z,spin,tilt,Width   = {"+ String(LinearRampXYZ::increment.gripX)+", "+ String(LinearRampXYZ::increment.gripY)+", "+ String(LinearRampXYZ::increment.gripZ)+"}, Grip (Spin, Tilt, Width) = ("+String(LinearRampXYZ::increment.gripSpinAngle) +", "+String(LinearRampXYZ::increment.gripTiltAngle)+", "+String(LinearRampXYZ::increment.gripWidth)+"), ");
 
     #endif
     
@@ -89,13 +92,14 @@ static volatile unsigned int rampTotalStepsCount = 100;              // number o
 
     LinearRampXYZ::currentPos.gripSpinAngle = (double)(LinearRampXYZ::fromPos.gripSpinAngle + LinearRampXYZ::increment.gripSpinAngle);
     LinearRampXYZ::currentPos.gripTiltAngle = (double)(LinearRampXYZ::fromPos.gripTiltAngle + LinearRampXYZ::increment.gripTiltAngle);
-    LinearRampXYZ::currentPos.gripWidth      = (double)(LinearRampXYZ::fromPos.gripWidth      + LinearRampXYZ::increment.gripWidth);
+    LinearRampXYZ::currentPos.gripWidth     = (double)(LinearRampXYZ::fromPos.gripWidth     + LinearRampXYZ::increment.gripWidth);
     
     //LinearRampXYZ::currentStep/ rampTotalStepsCount
     #if defined(DEBUG)
-      Serial.print("LinearRampXYZ::begin(): LinearRampXYZ::currentPos X,Y,Z   = {"+ String(LinearRampXYZ::currentPos.gripX)+", "+ String(LinearRampXYZ::currentPos.gripY)+", "+ String(LinearRampXYZ::currentPos.gripZ)+"}, ");
-      Serial.println("Angles (Spin, Tilt, Open) = ("+String(LinearRampXYZ::currentPos.gripSpinAngle) +", "+String(LinearRampXYZ::currentPos.gripTiltAngle)+", "+String(LinearRampXYZ::currentPos.gripWidth)+"), ");
+      Serial.print("LinearRampXYZ::update(): LinearRampXYZ::currentPos X,Y,Z   = {"+ String(LinearRampXYZ::currentPos.gripX)+", "+ String(LinearRampXYZ::currentPos.gripY)+", "+ String(LinearRampXYZ::currentPos.gripZ)+"}, ");
+      Serial.println("Grip (Spin, Tilt, Width) = ("+String(LinearRampXYZ::currentPos.gripSpinAngle) +", "+String(LinearRampXYZ::currentPos.gripTiltAngle)+", "+String(LinearRampXYZ::currentPos.gripWidth)+"), ");
 
     #endif
     return currentPos;
 	}
+   //------------------------------------end of update----------------------------------------------
