@@ -57,12 +57,12 @@
    //https://www.arduino.cc/reference/en/libraries/servo/writemicroseconds/
    //value of 1000 is fully counter-clockwise, 2000 is fully clockwise, and 1500 is in the middle.
    //so that servos often respond to values between 700 and 2300.
-    servo01.attach( 5); //zakladna
-    servo02.attach( 6);//spodne hnede rameno
-    servo03.attach( 7);//horne  biela rameno
-    servo04.attach( 8);//ruka nabok  100 = zhruba vodorovne
-    servo05.attach( 9);//ruka hore
-    servo06.attach(10);//ruka otvorena= 100, zatvorena = 60
+    servo01.attach( 1); //zakladna
+    servo02.attach( 2);//spodne hnede rameno
+    servo03.attach( 3);//horne  biela rameno
+    servo04.attach( 4);//ruka nabok  100 = zhruba vodorovne
+    servo05.attach( 5);//ruka hore
+    servo06.attach( 6);//ruka otvorena= 100, zatvorena = 60
 
     /*
 	  servo01.attach( 5, pServo_Min_milisec ,pServo_Max_milisec); //zakladna
