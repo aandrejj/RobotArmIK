@@ -38,6 +38,7 @@ typedef struct {
   int pinky_knuckle_right;
   int index_finger_fingertip;
   int index_finger_knuckle_left;
+  bool Select; 
   bool  dataReceived;
 }BluetoothOutputData;
 

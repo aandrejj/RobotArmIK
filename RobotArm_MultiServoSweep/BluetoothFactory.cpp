@@ -79,6 +79,7 @@ SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
         bluetoothOutputData.pinky_knuckle_right = mydata_remote.pinky_knuckle_right;
         bluetoothOutputData.index_finger_fingertip = mydata_remote.index_finger_fingertip;
         bluetoothOutputData.index_finger_knuckle_left = mydata_remote.index_finger_knuckle_left;
+        bluetoothOutputData.Select  = mydata_remote.Select;
 
         /*
         servo01_constrained = constrain(mydata_remote.index_finger_knuckle_right, 0, 1023);
