@@ -35,29 +35,24 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
         //pwm.setPWM( 6, 0, armServoAngles.gripAngle);
 
-    if(armServoAngles.baseAngle != previousArmServoAngles.baseAngle) {
-      pwm.setPWM( 1, 0, armServoAngles.baseAngle);
-    }
-    if(armServoAngles.arm1Angle != previousArmServoAngles.arm1Angle) {
-      pwm.setPWM( 2, 0, armServoAngles.arm1Angle);
-    }
-
-    if(armServoAngles.arm2Angle != previousArmServoAngles.arm2Angle) {
-      pwm.setPWM( 3, 0, armServoAngles.arm2Angle);
-    }
-
-    if(armServoAngles.gripSpinAngle != previousArmServoAngles.gripSpinAngle) {
-      pwm.setPWM( 4, 0, armServoAngles.gripSpinAngle);
-    }
-
-    if(armServoAngles.gripTiltAngle != previousArmServoAngles.gripTiltAngle) {
-      pwm.setPWM( 5, 0, armServoAngles.gripTiltAngle);
-    }
-
-    if(armServoAngles.gripAngle != previousArmServoAngles.gripAngle) {
-      pwm.setPWM( 6, 0, armServoAngles.gripAngle);
-    }
-
+    //if(armServoAngles.baseAngle != previousArmServoAngles.baseAngle) {
+      pwm.setPWM( 1, 0, angleToPulse(armServoAngles.baseAngle));
+    //}
+    //if(armServoAngles.arm1Angle != previousArmServoAngles.arm1Angle) {
+      pwm.setPWM( 2, 0, angleToPulse(armServoAngles.arm1Angle));
+    //}
+    //if(armServoAngles.arm2Angle != previousArmServoAngles.arm2Angle) {
+      pwm.setPWM( 3, 0, angleToPulse(armServoAngles.arm2Angle));
+    //}
+    //if(armServoAngles.gripSpinAngle != previousArmServoAngles.gripSpinAngle) {
+      pwm.setPWM( 4, 0, angleToPulse(armServoAngles.gripSpinAngle));
+    //}
+    //if(armServoAngles.gripTiltAngle != previousArmServoAngles.gripTiltAngle) {
+      pwm.setPWM( 5, 0, angleToPulse(armServoAngles.gripTiltAngle));
+    //}
+    //if(armServoAngles.gripAngle != previousArmServoAngles.gripAngle) {
+      pwm.setPWM( 6, 0, angleToPulse(armServoAngles.gripAngle));
+    //}
     previousArmServoAngles = armServoAngles;
   }
   //--------------------end of updateServo-----------------------------
@@ -76,7 +71,7 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 	  #if defined(DEBUG) || defined(BRIEF_LOG) 
 	    Serial.println("ServosManager::ServoInitialization: Initialization started");
       #endif
-	  delay(200);
+	  //delay(200);
    //https://www.arduino.cc/reference/en/libraries/servo/writemicroseconds/
    //value of 1000 is fully counter-clockwise, 2000 is fully clockwise, and 1500 is in the middle.
    //so that servos often respond to values between 700 and 2300.
@@ -86,15 +81,12 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
     #endif
 	  
 	  delay(20);
-  
-    pwm.setPWM( 1, 0, pservo1Pos);  
-    pwm.setPWM( 2, 0, pservo2Pos);
-
-    pwm.setPWM( 3, 0, pservo3Pos);
-    pwm.setPWM( 4, 0, pservo4Pos);
-    pwm.setPWM( 5, 0, pservo5Pos);
-
-    pwm.setPWM( 6, 0, pservo6Pos);
+    pwm.setPWM( 1, 0, angleToPulse(pservo1Pos));
+    pwm.setPWM( 2, 0, angleToPulse(pservo2Pos));
+    pwm.setPWM( 3, 0, angleToPulse(pservo3Pos));
+    pwm.setPWM( 4, 0, angleToPulse(pservo4Pos));
+    pwm.setPWM( 5, 0, angleToPulse(pservo5Pos));
+    pwm.setPWM( 6, 0, angleToPulse(pservo6Pos));
       
 	  #if defined(DEBUG) || defined(BRIEF_LOG) 
 	    Serial.println("ServosManager::ServoInitialization: Servos positioned to default positions");
@@ -106,7 +98,7 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 	  previousArmServoAngles.gripSpinAngle  = pservo4Pos; //ruka nabok
 	  previousArmServoAngles.gripTiltAngle  = pservo5Pos; //ruka hore
 	  previousArmServoAngles.gripAngle      = pservo6Pos; //ruka otvorena
-    previousArmServoAngles.duration       = 2000;
+    previousArmServoAngles.duration       = 200;
 	  previousArmServoAngles.movesScriptEnd = false;
 
 	  ArmServoAngles currentServoAngles;
@@ -117,7 +109,7 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 	  currentServoAngles.gripSpinAngle  = pservo4Pos; //ruka nabok
 	  currentServoAngles.gripTiltAngle  = pservo5Pos; //ruka hore
 	  currentServoAngles.gripAngle      = pservo6Pos; //ruka otvorena
-    currentServoAngles.duration       = 2000;
+    currentServoAngles.duration       = 200;
 	  currentServoAngles.movesScriptEnd = false;
 
     #if defined(DEBUG) || defined(BRIEF_LOG) 
@@ -126,3 +118,20 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
     #endif
 	  return currentServoAngles;
 	}
+
+
+/*
+ * angleToPulse(int ang)
+ * gets angle in degree and returns the pulse width
+ * also prints the value on seial monitor
+ * written by Ahmad Nejrabi for Robojax, Robojax.com
+ */
+int ServosManager::angleToPulse(int ang){
+   int pulse = map(ang,0, 180, SERVOMIN,SERVOMAX);// map angle of 0 to 180 to Servo min and Servo max 
+   
+   #if defined(DEBUG)
+    Serial.print("Angle: ");Serial.print(ang);
+    Serial.print(" pulse: ");Serial.println(pulse);
+   #endif
+   return pulse;
+}

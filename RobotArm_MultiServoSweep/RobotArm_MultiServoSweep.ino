@@ -107,11 +107,11 @@ bool partialMovementIsDone =  true;//false;
 
 ArmServoAngles servosInitialPosition;
 int servo1PPos = 90; //zakladna
-int servo2PPos = 110;//spodne hnede rameno
-int servo3PPos = 0; //horne  biela rameno
+int servo2PPos = 160;//spodne hnede rameno
+int servo3PPos = 15; //horne  biela rameno
 int servo4PPos = 100;//ruka nabok  100 = zhruba vodorovne
 int servo5PPos = 85; //ruka hore
-int servo6PPos = 90; //ruka otvorena= 100, zatvorena = 60
+int servo6PPos = 80; //ruka otvorena= 100, zatvorena = 60
 
 //SEND_DATA_STRUCTURE mydata_send;
 //RECEIVE_DATA_STRUCTURE mydata_remote;

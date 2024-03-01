@@ -8,6 +8,10 @@
 #define DEBUG         //debug logging
 #define BRIEF_LOG     //just a few logs
 
+#define SERVOMIN  125 // this is the 'minimum' pulse length count (out of 4096)
+#define SERVOMAX  575 // this is the 'maximum' pulse length count (out of 4096)
+
+
 typedef struct {
   double gripX;
   double gripY;
@@ -67,6 +71,7 @@ public:
 	
 	ArmServoAngles ServoInitialization(int pservo1Pos, int pservo2Pos, int pservo3Pos, int pservo4Pos, int pservo5Pos, int pservo6Pos, int pServo_Min_milisec, int pServo_Max_milisec );
 
+  int angleToPulse(int ang);
 private:
 
 };
