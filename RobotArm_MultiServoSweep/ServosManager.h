@@ -3,7 +3,9 @@
 
 #include "Arduino.h"
 #include <Servo.h>
-//#define DEBUG         //debug logging
+#include <Adafruit_PWMServoDriver.h>
+
+#define DEBUG         //debug logging
 #define BRIEF_LOG     //just a few logs
 
 typedef struct {
@@ -53,8 +55,10 @@ public:
 	Servo servo06; //ruka otvorena= 100, zatvorena = 60
 
 	ServosManager();
+  
+  void begin();
 
-  void updateServos_msec(ArmServoMicrosec armServoMicrosec);
+  //void updateServos_msec(ArmServoMicrosec armServoMicrosec);
   void updateServos(ArmServoAngles armServoAngles);
 	
 	ArmServoAngles updateCurrentAngles(ArmServoAngles oldServoAngles);

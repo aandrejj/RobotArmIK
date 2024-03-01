@@ -59,6 +59,8 @@ SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
 
       //BluetoothFactory::previousBtMillis = currentMillis;
       BluetoothOutputData bluetoothOutputData;
+      bluetoothOutputData.dataReceived = false;
+      
       if(ET2.receiveData()){                                        // main data receive
         //BluetoothFactory::previousSafetyMillis = currentMillis; 
 

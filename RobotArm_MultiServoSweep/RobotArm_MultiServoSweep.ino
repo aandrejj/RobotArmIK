@@ -30,6 +30,7 @@
 
 
 #include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
 
 #include <Arduino.h>                    // needed for PlatformIO
 #include <SoftwareSerial.h>
@@ -168,6 +169,9 @@ void setup() {
   //configure pin 2 as an input and enable the internal pull-up resistor
   pinMode(53, INPUT_PULLUP);
   pinMode(13, OUTPUT);
+
+  servosManager.begin();
+  
   inverseKinematics.begin(SERVO_MIN_MILISEC, SERVO_MAX_MILISEC);
   Serial.println("setup: Setup DONE. System is ready to Initialize servos. Press Button to start...");
 
@@ -190,7 +194,11 @@ void loop() {
         incrementsFromBtController.pinky_knuckle_right = bluetoothOutputData.pinky_knuckle_right - 512;
         incrementsFromBtController.index_finger_fingertip = bluetoothOutputData.index_finger_fingertip - 512;
         incrementsFromBtController.index_finger_knuckle_left = bluetoothOutputData.index_finger_knuckle_left - 512;
+
         if(bluetoothOutputData.Select) {
+          #ifdef DEBUG 
+		        Serial.println("loop: Servo Initialization by bluetoothOutputData.Select . bluetoothOutputData.Select="+String(bluetoothOutputData.Select));
+          #endif
           runRobotArm = buttons.onButton2Clicked(runRobotArm) ;
         }
       }
