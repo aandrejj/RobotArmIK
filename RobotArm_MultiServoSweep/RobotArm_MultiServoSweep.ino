@@ -108,10 +108,10 @@ bool partialMovementIsDone =  true;//false;
 ArmServoAngles servosInitialPosition;
 int servo1PPos = 90; //zakladna
 int servo2PPos = 160;//spodne hnede rameno
-int servo3PPos = 15; //horne  biela rameno
-int servo4PPos = 100;//ruka nabok  100 = zhruba vodorovne
-int servo5PPos = 85; //ruka hore
-int servo6PPos = 80; //ruka otvorena= 100, zatvorena = 60
+int servo3PPos = 13; //horne  biela rameno
+int servo4PPos = 90;//ruka nabok  100 = zhruba vodorovne
+int servo5PPos = 72; //ruka hore
+int servo6PPos = 110; //ruka otvorena= 100, zatvorena = 60
 
 //SEND_DATA_STRUCTURE mydata_send;
 //RECEIVE_DATA_STRUCTURE mydata_remote;
@@ -251,7 +251,7 @@ void loop() {
             currentGripPosition = linearRampXYZ.update();
             currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
             #ifdef DEBUG 
-              Serial.println("loop: after linearRampXYZ.update() currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
+              Serial.println("loop: BT after linearRampXYZ.update() currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
             #endif
   
             if(linearRampXYZ.rampOnce.rampIsFinished) {

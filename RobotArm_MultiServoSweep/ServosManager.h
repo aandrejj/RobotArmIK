@@ -5,7 +5,7 @@
 #include <Servo.h>
 #include <Adafruit_PWMServoDriver.h>
 
-#define DEBUG         //debug logging
+//#define DEBUG         //debug logging
 #define BRIEF_LOG     //just a few logs
 
 #define SERVOMIN  125 // this is the 'minimum' pulse length count (out of 4096)
