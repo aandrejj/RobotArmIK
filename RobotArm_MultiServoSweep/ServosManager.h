@@ -47,12 +47,14 @@ typedef struct {
 class ServosManager{
 
 public:
-	Servo servo01; //zakladna
-	Servo servo02; //spodne hnede rameno
-	Servo servo03; //horne  biela rameno
-	Servo servo04; //ruka nabok  100 = zhruba vodorovne
-	Servo servo05; //ruka hore
-	Servo servo06; //ruka otvorena= 100, zatvorena = 60
+	//Servo servo01; //zakladna
+	//Servo servo02; //spodne hnede rameno
+	//Servo servo03; //horne  biela rameno
+	//Servo servo04; //ruka nabok  100 = zhruba vodorovne
+	//Servo servo05; //ruka hore
+	//Servo servo06; //ruka otvorena= 100, zatvorena = 60
+
+  ArmServoAngles previousArmServoAngles;
 
 	ServosManager();
   

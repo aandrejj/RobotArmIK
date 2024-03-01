@@ -302,7 +302,6 @@ void loop() {
             }
             if(!targetGripPosition.movesScriptEnd) {
               
-              //servosManager.updateServos(currentArmMicrosec);   // send pulses to servos.  update servos according to InverseKinematics Values
               servosManager.updateServos(currentArmAngles);   // send pulses to servos.  update servos according to InverseKinematics Values
               //delay(10);       // lazy way to limit update to 100 Hz
             } else {
