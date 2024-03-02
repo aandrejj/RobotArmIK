@@ -27,6 +27,7 @@
 #include "SoftwareSerial.h"
 #include "RemoteController_dataStructures.h"
 #include <Math.h>
+#include <LiquidCrystal_I2C.h>
 
 
 #include <Wire.h>
@@ -97,6 +98,7 @@ ArmServoAngles currentArmAngles;
 
 ArmServoMicrosec currentArmMicrosec;
 
+LiquidCrystal_I2C lcd(0x27,16,2);  // set the LCD address to 0x27 for a 20 chars and 4 line display
 
 int speedDelay = 50;
 int index = 0;
@@ -155,6 +157,20 @@ void setup() {
   #ifdef DEBUG 
     Serial.println(); 
   #endif
+
+  //lcd.begin(16,2);   // Initialize the lcd for 20 chars 4 lines, turn on backlight
+  //lcd.backlight();
+  //lcd.print("hello, world!");
+  /*
+  lcd.init();                      // initialize the lcd 
+  lcd.init();
+  // Print a message to the LCD.
+  lcd.backlight();
+  lcd.setCursor(0,0);
+  lcd.print("Hello, world!");
+  lcd.setCursor(1,1);
+  lcd.print("Hello Arduino!");
+  */
 
   if(BT_ON ==1) {
     #ifdef DEBUG 
