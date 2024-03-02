@@ -30,6 +30,7 @@
 
 
 #include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
 
 #include <Arduino.h>                    // needed for PlatformIO
 #include <SoftwareSerial.h>
@@ -106,11 +107,11 @@ bool partialMovementIsDone =  true;//false;
 
 ArmServoAngles servosInitialPosition;
 int servo1PPos = 90; //zakladna
-int servo2PPos = 110;//spodne hnede rameno
-int servo3PPos = 0; //horne  biela rameno
-int servo4PPos = 100;//ruka nabok  100 = zhruba vodorovne
-int servo5PPos = 85; //ruka hore
-int servo6PPos = 90; //ruka otvorena= 100, zatvorena = 60
+int servo2PPos = 160;//spodne hnede rameno
+int servo3PPos = 13; //horne  biela rameno
+int servo4PPos = 90;//ruka nabok  100 = zhruba vodorovne
+int servo5PPos = 72; //ruka hore
+int servo6PPos = 110; //ruka otvorena= 100, zatvorena = 60
 
 //SEND_DATA_STRUCTURE mydata_send;
 //RECEIVE_DATA_STRUCTURE mydata_remote;
@@ -168,6 +169,9 @@ void setup() {
   //configure pin 2 as an input and enable the internal pull-up resistor
   pinMode(53, INPUT_PULLUP);
   pinMode(13, OUTPUT);
+
+  servosManager.begin();
+  
   inverseKinematics.begin(SERVO_MIN_MILISEC, SERVO_MAX_MILISEC);
   Serial.println("setup: Setup DONE. System is ready to Initialize servos. Press Button to start...");
 
@@ -185,15 +189,8 @@ void loop() {
   if(BT_ON ==1) {
     if ((currentMillis - previousBtMillis) >= interval) {  
       bluetoothOutputData = bluetoothFactory.BT_loop(currentMillis);
-      if(bluetoothOutputData.dataReceived) {
-        incrementsFromBtController.index_finger_knuckle_right = bluetoothOutputData.index_finger_knuckle_right - 512;
-        incrementsFromBtController.pinky_knuckle_right = bluetoothOutputData.pinky_knuckle_right - 512;
-        incrementsFromBtController.index_finger_fingertip = bluetoothOutputData.index_finger_fingertip - 512;
-        incrementsFromBtController.index_finger_knuckle_left = bluetoothOutputData.index_finger_knuckle_left - 512;
-        if(bluetoothOutputData.Select) {
-          runRobotArm = buttons.onButton2Clicked(runRobotArm) ;
-        }
-      }
+
+      runRobotArm = bluetoothDataHandler_by_loop(bluetoothOutputData);
 
       previousBtMillis = currentMillis;
     }
@@ -206,105 +203,145 @@ void loop() {
   }// end of if (Btn2Clicked)
   
   if(runRobotArm == 1) {
-    if (initializationDone == 0) {
-      #ifdef DEBUG 
-		    Serial.println("loop: Servo Initialization. runRobotArm == 0");
-      #endif
-      startArmAngles = servosManager.ServoInitialization(servo1PPos, servo2PPos, servo3PPos, servo4PPos, servo5PPos, servo6PPos,SERVO_MIN_MILISEC ,SERVO_MAX_MILISEC );
-      currentGripPosition = inverseKinematics.convertAngleToPosXYZ(startArmAngles);
-      #if defined(DEBUG) || defined(BRIEF_LOG)
-        Serial.println("loop():  currentGripPosition (X,Y,Z) = ("+String(currentGripPosition.gripX)+", "+String(currentGripPosition.gripY)+", "+String(currentGripPosition.gripZ)+" ), Angles (Spin, Tilt, Open) = ("+String(currentGripPosition.gripSpinAngle) +", "+String(currentGripPosition.gripTiltAngle)+", "+String(currentGripPosition.gripWidth)+"), duration="+String(currentGripPosition.duration)+", movesScriptEnd = "+String(currentGripPosition.movesScriptEnd));     
-      #endif
-      currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
-      servosManager.updateServos(currentArmAngles);   // send pulses to servos.  update servos according to InverseKinematics Values
-      initializationDone = 1;
-      delay(100);
-      Serial.println("loop: Servo Initialization  DONE. Press Button to start...-----------------------------------------");
-    }
+    //------------------------------------
+    servo_initialization_by_loop();
   }
+
   if(runRobotArm == 2) {
       if(initializationDone == 1) {
         if(BT_ON ==1) {
-          if(partialMovementIsDone==true) {
-            //----------------------------------
-            //----------------------------------
-            targetGripPosition.gripX = targetGripPosition.gripX + (incrementsFromBtController.index_finger_knuckle_right/50);
-            targetGripPosition.gripY = targetGripPosition.gripY + (incrementsFromBtController.pinky_knuckle_right/50);
-            targetGripPosition.gripZ = targetGripPosition.gripZ + (incrementsFromBtController.index_finger_fingertip/50);
-            //----------------------------------
-            //----------------------------------
-            partialMovementIsDone = false;
-                linearRampXYZ.begin(currentGripPosition, targetGripPosition);
-                linearRampXYZ.setup();
-    
-                currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
-
-          } else {
-            currentGripPosition = linearRampXYZ.update();
-            currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
-            #ifdef DEBUG 
-              Serial.println("loop: after linearRampXYZ.update() currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
-            #endif
-  
-            if(linearRampXYZ.rampOnce.rampIsFinished) {
-              Serial.println("loop: linearRampXYZ.rampOnce.rampIsFinished. partialMovementIsDone = true");
-              partialMovementIsDone = true;
-            }            
-          }
+        //--------------------------------------
+        //--------------------
         } else {
-          currentMillis = millis();
-          if (currentMillis - previousMillis >= 10) {  // start timed loop
-            previousMillis = currentMillis;
-            
-            if(partialMovementIsDone==true) {
-              #ifdef DEBUG 
-                Serial.println("loop: partialMovementIsDone==true, starting  roboArmTurn.takeNextRoboArmPosition()");
-              #endif
-              targetGripPosition = roboArmTurn.takeNextRoboArmPosition(); //read next target-position from 'moving script'       
-              if(!targetGripPosition.movesScriptEnd) {
-                partialMovementIsDone = false;
-                
-                #ifdef DEBUG 
-                  Serial.println("loop: before linearRampXYZ.begin(...) currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
-                #endif
-                linearRampXYZ.begin(currentGripPosition, targetGripPosition);
-                linearRampXYZ.setup();
-    
-                currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
-              } else {
-                Serial.println("loop: movesScriptEnd!!!");
-                runRobotArm = runRobotArm - 1;  // = 2
-                targetGripPosition = roboArmTurn.resetMovescript();
-                
-              }
-              
-            } 
-            else 
-            {
-              currentGripPosition = linearRampXYZ.update();
-              currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
-              #ifdef DEBUG 
-                Serial.println("loop: after linearRampXYZ.update() currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
-              #endif
-    
-              if(linearRampXYZ.rampOnce.rampIsFinished) {
-                Serial.println("loop: linearRampXYZ.rampOnce.rampIsFinished. partialMovementIsDone = true");
-                partialMovementIsDone = true;
-              }
-            }
-            if(!targetGripPosition.movesScriptEnd) {
-              
-              //servosManager.updateServos(currentArmMicrosec);   // send pulses to servos.  update servos according to InverseKinematics Values
-              servosManager.updateServos(currentArmAngles);   // send pulses to servos.  update servos according to InverseKinematics Values
-              //delay(10);       // lazy way to limit update to 100 Hz
-            } else {
-              #ifdef DEBUG 
-                Serial.println("loop: delay(100)  @ End.");
-              #endif
-              //delay(100);
-            }
-          } // end of if (currentMillis - previousMillis >= 10
+        //-------------
+          runRobotArm = sequence_movement_by_loop();
+        //-------------
         }  //end of else BT_ON
       }      
   }  
 }// ----------end of loop-------------------------------------------
+
+int bluetoothDataHandler_by_loop(BluetoothOutputData bluetoothOutputData){
+      if(bluetoothOutputData.dataReceived) {
+        incrementsFromBtController.index_finger_knuckle_right = bluetoothOutputData.index_finger_knuckle_right - 512;
+        incrementsFromBtController.pinky_knuckle_right = bluetoothOutputData.pinky_knuckle_right - 512;
+        incrementsFromBtController.index_finger_fingertip = bluetoothOutputData.index_finger_fingertip - 512;
+        incrementsFromBtController.index_finger_knuckle_left = bluetoothOutputData.index_finger_knuckle_left - 512;
+
+        if(bluetoothOutputData.Select) {
+          #ifdef DEBUG 
+		        Serial.println("bluetoothDataHandler_by_loop: Servo Initialization by bluetoothOutputData.Select . bluetoothOutputData.Select="+String(bluetoothOutputData.Select));
+          #endif
+          runRobotArm = buttons.onButton2Clicked(runRobotArm) ;
+        }
+      }
+  return runRobotArm;
+}
+
+//-------------------bluetooth_movement_by_loop---------------------
+void bluetooth_movement_by_loop(){
+  if(partialMovementIsDone==true) {
+    //----------------------------------
+    //----------------------------------
+    targetGripPosition.gripX = targetGripPosition.gripX + (incrementsFromBtController.index_finger_knuckle_right/50);
+    targetGripPosition.gripY = targetGripPosition.gripY + (incrementsFromBtController.pinky_knuckle_right/50);
+    targetGripPosition.gripZ = targetGripPosition.gripZ + (incrementsFromBtController.index_finger_fingertip/50);
+    //----------------------------------
+    //----------------------------------
+    partialMovementIsDone = false;
+        linearRampXYZ.begin(currentGripPosition, targetGripPosition);
+        linearRampXYZ.setup();
+
+        currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
+
+  } else {
+    currentGripPosition = linearRampXYZ.update();
+    currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
+    #ifdef DEBUG 
+      Serial.println("bluetooth_movement_by_loop: BT after linearRampXYZ.update() currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
+    #endif
+
+    if(linearRampXYZ.rampOnce.rampIsFinished) {
+      Serial.println("bluetooth_movement_by_loop: linearRampXYZ.rampOnce.rampIsFinished. partialMovementIsDone = true");
+      partialMovementIsDone = true;
+    }            
+  }
+}
+//-------------------end of bluetooth_movement_by_loop---------------------
+
+//----------------------sequence_movement_by_loop--------------------------
+int sequence_movement_by_loop(){
+  currentMillis = millis();
+  if (currentMillis - previousMillis >= 10) {  // start timed loop
+    previousMillis = currentMillis;
+    
+    if(partialMovementIsDone==true) {
+      #ifdef DEBUG 
+        Serial.println("sequence_movement_by_loop: partialMovementIsDone==true, starting  roboArmTurn.takeNextRoboArmPosition()");
+      #endif
+      targetGripPosition = roboArmTurn.takeNextRoboArmPosition(); //read next target-position from 'moving script'       
+      if(!targetGripPosition.movesScriptEnd) {
+        partialMovementIsDone = false;
+        
+        #ifdef DEBUG 
+          Serial.println("sequence_movement_by_loop: before linearRampXYZ.begin(...) currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
+        #endif
+        linearRampXYZ.begin(currentGripPosition, targetGripPosition);
+        linearRampXYZ.setup();
+
+        currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
+      } else {
+        Serial.println("sequence_movement_by_loop: movesScriptEnd!!!");
+        runRobotArm = runRobotArm - 1;  // = 2
+        targetGripPosition = roboArmTurn.resetMovescript();
+        
+      }
+      
+    } 
+    else 
+    {
+      currentGripPosition = linearRampXYZ.update();
+      currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
+      #ifdef DEBUG 
+        Serial.println("sequence_movement_by_loop: after linearRampXYZ.update() currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
+      #endif
+
+      if(linearRampXYZ.rampOnce.rampIsFinished) {
+        Serial.println("sequence_movement_by_loop: linearRampXYZ.rampOnce.rampIsFinished. partialMovementIsDone = true");
+        partialMovementIsDone = true;
+      }
+    }
+    if(!targetGripPosition.movesScriptEnd) {
+      
+      servosManager.updateServos(currentArmAngles);   // send pulses to servos.  update servos according to InverseKinematics Values
+      //delay(10);       // lazy way to limit update to 100 Hz
+    } else {
+      #ifdef DEBUG 
+        Serial.println("sequence_movement_by_loop: delay(100)  @ End.");
+      #endif
+      //delay(100);
+    }
+  } // end of if (currentMillis - previousMillis >= 10
+  return runRobotArm;
+}
+//-------------------end of sequence_movement_by_loop----------------------------
+
+//---------------------servo_initialization_by_loop-----------------------------
+void servo_initialization_by_loop() {
+  if (initializationDone == 0) {
+    #ifdef DEBUG 
+      Serial.println("servo_initialization_by_loop: Servo Initialization. runRobotArm == 0");
+    #endif
+    startArmAngles = servosManager.ServoInitialization(servo1PPos, servo2PPos, servo3PPos, servo4PPos, servo5PPos, servo6PPos,SERVO_MIN_MILISEC ,SERVO_MAX_MILISEC );
+    currentGripPosition = inverseKinematics.convertAngleToPosXYZ(startArmAngles);
+    #if defined(DEBUG) || defined(BRIEF_LOG)
+      Serial.println("servo_initialization_by_loop():  currentGripPosition (X,Y,Z) = ("+String(currentGripPosition.gripX)+", "+String(currentGripPosition.gripY)+", "+String(currentGripPosition.gripZ)+" ), Angles (Spin, Tilt, Open) = ("+String(currentGripPosition.gripSpinAngle) +", "+String(currentGripPosition.gripTiltAngle)+", "+String(currentGripPosition.gripWidth)+"), duration="+String(currentGripPosition.duration)+", movesScriptEnd = "+String(currentGripPosition.movesScriptEnd));     
+    #endif
+    currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
+    servosManager.updateServos(currentArmAngles);   // send pulses to servos.  update servos according to InverseKinematics Values
+    initializationDone = 1;
+    delay(100);+
+    Serial.println("servo_initialization_by_loop: Servo Initialization  DONE. Press Button to start...-----------------------------------------");
+  }
+}
+//------------------end of servo_initialization_by_loop--------------------------

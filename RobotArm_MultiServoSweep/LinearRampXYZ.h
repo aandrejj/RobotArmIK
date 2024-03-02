@@ -6,7 +6,7 @@
 #include "ServosManager.h"
 #include "RampOnce.h"
 //#define DEBUG         //debug logging
-#define BRIEF_LOG     //just a few logs
+//#define BRIEF_LOG     //just a few logs
 
 //https://github.com/siteswapjuggler/RAMP/tree/master
 

@@ -6,6 +6,7 @@ InverseKinematics::InverseKinematics() {
 }
 
 void InverseKinematics::begin(int pServo_Min_milisec, int pServo_Max_milisec){
+
   InverseKinematics::Servo_Min_milisec = (double)pServo_Min_milisec;
   InverseKinematics::Servo_Max_milisec = (double)pServo_Max_milisec;
 }
@@ -149,8 +150,8 @@ ArmServoAngles InverseKinematics::moveToPosXYZ(GripPositionXYZ positionXYZ) {
     Serial.println("InverseKinematics::moveToPos(): b             = "+String(b )+".");
     Serial.println("InverseKinematics::moveToPos(): a1            = "+String(a1)+".");
     Serial.println("InverseKinematics::moveToPos(): a2            = "+String(a2)+".");
-    Serial.println("InverseKinematics::moveToPos(): gripSpinAngle = "+String(gripSpinAngle)+".");
-    Serial.println("InverseKinematics::moveToPos(): gripTiltAngle = "+String(gripTiltAngle)+".");
+    //Serial.println("InverseKinematics::moveToPos(): gripSpinAngle = "+String(gripSpinAngle)+".");
+    Serial.println("InverseKinematics::moveToPos(): newGripTiltAngle = "+String(newGripTiltAngle)+".");
     Serial.println("InverseKinematics::moveToPos(): gripAngle     = "+String(gripAngle)+".");
   #endif
   

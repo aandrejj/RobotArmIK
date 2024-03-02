@@ -54,6 +54,10 @@ public:
   void BT_to_serial_prepare();
   BluetoothOutputData BT_loop(unsigned long currentMillis);
 
+  bool check_bt_from_loop(unsigned long currentMillis);
+
+  bool Bt_state_checker(unsigned long currentMillis, bool previousState, bool newState);
+
   private:
 
 };

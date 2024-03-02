@@ -10,7 +10,7 @@
 #include "ServosManager.h"
 
 //#define DEBUG         //debug logging
-#define BRIEF_LOG     //just a few logs
+//#define BRIEF_LOG     //just a few logs
 
 class RoboArmTurn {
   public:
