@@ -189,7 +189,7 @@ void loop() {
   if(BT_ON ==1) {
     if ((currentMillis - previousBtMillis) >= interval) {  
       bluetoothOutputData = bluetoothFactory.BT_loop(currentMillis);
-      
+
       runRobotArm = bluetoothDataHandler_by_loop(bluetoothOutputData);
 
       previousBtMillis = currentMillis;
@@ -214,7 +214,7 @@ void loop() {
         //--------------------
         } else {
         //-------------
-          sequence_movement_by_loop();
+          runRobotArm = sequence_movement_by_loop();
         //-------------
         }  //end of else BT_ON
       }      
@@ -270,7 +270,7 @@ void bluetooth_movement_by_loop(){
 //-------------------end of bluetooth_movement_by_loop---------------------
 
 //----------------------sequence_movement_by_loop--------------------------
-void sequence_movement_by_loop(){
+int sequence_movement_by_loop(){
   currentMillis = millis();
   if (currentMillis - previousMillis >= 10) {  // start timed loop
     previousMillis = currentMillis;
@@ -322,6 +322,7 @@ void sequence_movement_by_loop(){
       //delay(100);
     }
   } // end of if (currentMillis - previousMillis >= 10
+  return runRobotArm;
 }
 //-------------------end of sequence_movement_by_loop----------------------------
 
@@ -339,7 +340,7 @@ void servo_initialization_by_loop() {
     currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
     servosManager.updateServos(currentArmAngles);   // send pulses to servos.  update servos according to InverseKinematics Values
     initializationDone = 1;
-    delay(100);
+    delay(100);+
     Serial.println("servo_initialization_by_loop: Servo Initialization  DONE. Press Button to start...-----------------------------------------");
   }
 }
