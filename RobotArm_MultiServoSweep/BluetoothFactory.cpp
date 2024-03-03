@@ -12,17 +12,17 @@
 int mode;
 int count;
 
-  unsigned long milisOfLastStateChanged;
-  unsigned long maxTimeOfNoChangeMillis = 1500;
-  unsigned long  currentStateDuration;
-  bool LedIsBlinking = true;
-  bool BtLedIsSteadyOn = false;
+  //unsigned long milisOfLastStateChanged;
+  //unsigned long maxTimeOfNoChangeMillis = 1500;
+  //unsigned long  currentStateDuration;
+  //bool LedIsBlinking = true;
+  //bool BtLedIsSteadyOn = false;
 
-  int state; // BT state
-  int previous_state;
+  //int state; // BT state
+  //int previous_state;
 
 bool bt_State = false;
-bool previous_bt_state = false;
+//bool previous_bt_state = false;
 
 
 
@@ -37,9 +37,9 @@ SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
 
 	BluetoothFactory::BluetoothFactory() {
   }
-
+  
   void BluetoothFactory::begin() {
-    previous_state = 0;
+    //previous_state = 0;
     //previousBtMillis = 0;
     //interval = 20;
     //previousServoMillis=0;
@@ -121,56 +121,3 @@ SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
     */
     return bluetoothOutputData;
 }
-
-//---------------------check_bt_from_loop--------------------------
-bool BluetoothFactory::check_bt_from_loop(unsigned long currentMillis) {
-  // check to see if BT is paired
-  state = digitalRead(STATE);
-  
-  previous_bt_state = bt_State;
-  bt_State = BluetoothFactory::Bt_state_checker(currentMillis, previous_state, state);
-
-  previous_state = state;
-
-  if (!bt_State) {
-    if(previous_bt_state!= bt_State) {
-      Serial.println("BT connecting...");
-      //lcd.setCursor(0,3);
-      //lcd.print(" BT connecting.. ");
-    }
-  }
-  else {
-    if(previous_bt_state!= bt_State) {
-      Serial.println("BT Paired to Controller");
-      //lcd.setCursor(0,3);
-      //lcd.print(" BT Paired to Robot ");
-    }
-  }
-}
-//-----------------------end of   check_bt_from_loop---------------------------------
-
-
-//-----------------------Bt_state_checker----------------------------------------------
-bool BluetoothFactory::Bt_state_checker(unsigned long currentMillis, bool previousState, bool newState) {
-  if(previousState!=newState) {
-    milisOfLastStateChanged = currentMillis;
-    LedIsBlinking = true;
-    BtLedIsSteadyOn = false;
-  } else {
-    currentStateDuration = currentMillis - milisOfLastStateChanged;
-    if(currentStateDuration > maxTimeOfNoChangeMillis) {
-      LedIsBlinking = false;
-      if(newState) {
-        BtLedIsSteadyOn = true;
-      } else {
-        BtLedIsSteadyOn = false;
-      }
-    } else {
-      LedIsBlinking = true;
-      BtLedIsSteadyOn = false;
-    }
-  }
-  return BtLedIsSteadyOn;
-}
-//-----------------------Bt_state_checker----------------------------------------------
-

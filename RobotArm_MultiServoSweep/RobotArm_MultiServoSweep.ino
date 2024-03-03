@@ -61,9 +61,11 @@
   #define Baud 9600    // Serial monitor
   #define BTBaud 9600  // HM-10, HM-19 etc
 #endif
-/*
 
+int state;
+int previous_state;
 #define STATE 11
+/*
 #define BLUETOOTH_RX 9  // Bluetooth RX -> Arduino D9
 #define BLUETOOTH_TX 10 // Bluetooth TX -> Arduino D10
 //#define GND 13
@@ -132,6 +134,17 @@ long previousSafetyMillis;
 
 //SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
 
+bool bt_State_Connected = false;
+bool previous_bt_state = false;
+bool newDataReceived;
+
+
+unsigned long milisOfLastStateChanged;
+unsigned long maxTimeOfNoChangeMillis = 1500;
+unsigned long  currentStateDuration;
+bool LedIsBlinking = true;
+bool BtLedIsSteadyOn = false;
+
 //----------------------setup-------------------------------------------
 void setup() {
   // Open serial communications and wait for port to open:
@@ -180,18 +193,25 @@ void setup() {
 
 
 
-
 //-----------------loop-------------------------------------------------
 void loop() {
   
   unsigned long currentMillis = millis();
 
   if(BT_ON ==1) {
-    if ((currentMillis - previousBtMillis) >= interval) {  
-      bluetoothOutputData = bluetoothFactory.BT_loop(currentMillis);
+    if ((currentMillis - previousBtMillis) >= interval) 
+    {
+      if( (!bt_State_Connected) || (!previous_bt_state) )
+      {
+        loop_Handling_formBluetoothConnecting(currentMillis);
+      }
 
-      runRobotArm = bluetoothDataHandler_by_loop(bluetoothOutputData);
+      if(bt_State_Connected)
+      {
+        bluetoothOutputData = bluetoothFactory.BT_loop(currentMillis);
 
+        runRobotArm = bluetoothDataHandler_by_loop(bluetoothOutputData);
+      }
       previousBtMillis = currentMillis;
     }
   }
@@ -202,12 +222,23 @@ void loop() {
     runRobotArm = buttons.onButton2Clicked(runRobotArm) ;
   }// end of if (Btn2Clicked)
   
-  if(runRobotArm == 1) {
-    //------------------------------------
-    servo_initialization_by_loop();
-  }
-
-  if(runRobotArm == 2) {
+  switch (runRobotArm) {
+    case 0:
+      //------------------------------------
+      #if defined(DEBUG)
+        Serial.println("loop: runRobotArm =0.");
+      #endif
+      break;
+      
+    case 1:
+      //------------------------------------
+      servo_initialization_by_loop();
+      break;
+      
+    case 2:
+      #if defined(DEBUG) || defined(BRIEF_LOG)
+        Serial.println("loop: runRobotArm =2. , initializationDone ="+String(initializationDone));
+      #endif
       if(initializationDone == 1) {
         if(BT_ON ==1) {
         //--------------------------------------
@@ -217,8 +248,14 @@ void loop() {
           runRobotArm = sequence_movement_by_loop();
         //-------------
         }  //end of else BT_ON
-      }      
-  }  
+      }
+      break;
+      
+    default:
+      Serial.println("loop: WARNING:   switch(runRobotArm) -> default: runRobotArm = "+String(runRobotArm)+"!!!");
+      break;
+      
+  } // end of switch
 }// ----------end of loop-------------------------------------------
 
 int bluetoothDataHandler_by_loop(BluetoothOutputData bluetoothOutputData){
@@ -229,7 +266,7 @@ int bluetoothDataHandler_by_loop(BluetoothOutputData bluetoothOutputData){
         incrementsFromBtController.index_finger_knuckle_left = bluetoothOutputData.index_finger_knuckle_left - 512;
 
         if(bluetoothOutputData.Select) {
-          #ifdef DEBUG 
+          #if defined(DEBUG) || defined(BRIEF_LOG)
 		        Serial.println("bluetoothDataHandler_by_loop: Servo Initialization by bluetoothOutputData.Select . bluetoothOutputData.Select="+String(bluetoothOutputData.Select));
           #endif
           runRobotArm = buttons.onButton2Clicked(runRobotArm) ;
@@ -246,6 +283,10 @@ void bluetooth_movement_by_loop(){
     targetGripPosition.gripX = targetGripPosition.gripX + (incrementsFromBtController.index_finger_knuckle_right/50);
     targetGripPosition.gripY = targetGripPosition.gripY + (incrementsFromBtController.pinky_knuckle_right/50);
     targetGripPosition.gripZ = targetGripPosition.gripZ + (incrementsFromBtController.index_finger_fingertip/50);
+    #ifdef DEBUG 
+      Serial.println("bluetooth_movement_by_loop: incrementsFromBtController= ("+String(incrementsFromBtController.index_finger_knuckle_right)+", "+String(incrementsFromBtController.pinky_knuckle_right)+", "+String(incrementsFromBtController.index_finger_fingertip)+")");
+      Serial.println("bluetooth_movement_by_loop: targetGripPosition= ("+String(targetGripPosition.gripX)+", "+String(targetGripPosition.gripY)+", "+String(targetGripPosition.gripZ)+")");
+    #endif
     //----------------------------------
     //----------------------------------
     partialMovementIsDone = false;
@@ -341,7 +382,80 @@ void servo_initialization_by_loop() {
     servosManager.updateServos(currentArmAngles);   // send pulses to servos.  update servos according to InverseKinematics Values
     initializationDone = 1;
     delay(100);+
-    Serial.println("servo_initialization_by_loop: Servo Initialization  DONE. Press Button to start...-----------------------------------------");
+    Serial.println("servo_initialization_by_loop: Servo Initialization  DONE. (initializationDone =1) Press Button to start...-----------------------------------------");
   }
 }
 //------------------end of servo_initialization_by_loop--------------------------
+
+//------------loop_Handling_formBluetoothConnecting----------------------------
+void loop_Handling_formBluetoothConnecting(unsigned long currentMillis) {
+  //bt_serial_async(currentMillis);
+  if (check_bt_from_loop(currentMillis)==true) {
+    Serial.println("Bluetooth connected");
+    //showForm = form_Menu;
+    //menuIsShown = true;
+    //menu.show();
+  }
+}
+//--------end of loop_Handling_formBluetoothConnecting--------------------------
+
+//---------------------check_bt_from_loop--------------------------
+bool check_bt_from_loop(unsigned long currentMillis) {
+  if(BT_ON ==1) {
+      // check to see if BT is paired
+      //state = bluetoothFactory.getBtState();
+      state = digitalRead(STATE);
+      
+      previous_bt_state = bt_State_Connected;
+      bt_State_Connected = Bt_state_checker(currentMillis, previous_state, state);
+
+      previous_state = state;
+
+      if (!bt_State_Connected) {
+        if(previous_bt_state!= bt_State_Connected) {
+          Serial.println("BT connecting...");
+          //lcd.setCursor(0,3);
+          //lcd.print(" BT connecting.. ");
+        }
+      }
+      else {
+        if(previous_bt_state!= bt_State_Connected) {
+          Serial.println("BT Paired to RemoteController");
+          //lcd.setCursor(0,3);
+          //lcd.print(" BT Paired to Robot ");
+        }
+      }
+    } else {
+      //if(showForm == form_ShowMeasuredData) {
+        //lcd.setCursor(0,3);
+        //lcd.print(" BT:"+String(bluetooth_On)+  ", Displ:"+String(showDataOnDisplay));
+      //}
+  }// end of if BT_ON ==1
+  return bt_State_Connected;
+}
+//-----------------------end of   check_bt_from_loop---------------------------------
+
+//-----------------------Bt_state_checker----------------------------------------------
+bool Bt_state_checker(unsigned long currentMillis, bool previousState, bool newState) {
+  if(previousState!=newState) {
+    milisOfLastStateChanged = currentMillis;
+    LedIsBlinking = true;
+    BtLedIsSteadyOn = false;
+  } else {
+    currentStateDuration = currentMillis - milisOfLastStateChanged;
+    if(currentStateDuration > maxTimeOfNoChangeMillis) {
+      LedIsBlinking = false;
+      if(newState) {
+        BtLedIsSteadyOn = true;
+      } else {
+        BtLedIsSteadyOn = false;
+      }
+    } else {
+      LedIsBlinking = true;
+      BtLedIsSteadyOn = false;
+    }
+  }
+  return BtLedIsSteadyOn;
+}
+//-----------------------Bt_state_checker----------------------------------------------
+
