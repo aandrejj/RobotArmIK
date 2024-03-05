@@ -17,7 +17,6 @@
 #include "ServosManager.h"
 #include "InverseKinematics.h"
 #include "Buttons.h"
-#include "ServoRamp.h"
 #include "LinearRampXYZ.h"
 #include "RampOnce.h"
 #include "RoboArmTurn.h"
@@ -121,10 +120,6 @@ int servo4PPos = 90;//ruka nabok  100 = zhruba vodorovne
 int servo5PPos = 72; //ruka hore
 int servo6PPos = 110; //ruka otvorena= 100, zatvorena = 60
 
-//SEND_DATA_STRUCTURE mydata_send;
-//RECEIVE_DATA_STRUCTURE mydata_remote;
-
-
 unsigned long currentMillis;
 //unsigned long previousMillis;
 
@@ -137,8 +132,6 @@ unsigned long previousServoMillis=0;
 const long servoInterval = 200;
 
 long previousSafetyMillis;
-
-//SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
 
 bool bt_State_Connected = false;
 bool previous_bt_state = false;
@@ -154,9 +147,6 @@ bool BtLedIsSteadyOn = false;
 //----------------------setup-------------------------------------------
 void setup() {
   // Open serial communications and wait for port to open:
-  //Serial.begin(115200);
-  //Serial.begin( 19200);
-  //Serial.begin(  9600);
   Serial.begin(Baud, SERIAL_8N1);
 
   while (!Serial) {
@@ -216,8 +206,7 @@ void loop() {
       {
         bluetoothOutputData = bluetoothFactory.BT_loop(currentMillis);
 
-        //runRobotArm = bluetoothDataHandler_by_loop(bluetoothOutputData);
-        runRobotArm = bluetoothButtonHandelr_by_loop(bluetoothOutputData);
+        runRobotArm = bluetoothButtonHandler_by_loop(bluetoothOutputData);
 
       }
       //previousBtMillis = currentMillis;
@@ -261,7 +250,6 @@ void loop() {
             bluetoothDataHandler_by_loop(bluetoothOutputData);
           
             #if defined(DEBUG) // || defined(BRIEF_LOG)
-              //Serial.println("loop: runRobotArm =2. , initializationDone ="+String(initializationDone));
               Serial.println("loop: balancedBluetoothOutputData= ("+String(balancedBluetoothOutputData.index_finger_knuckle_right)+", "+String(balancedBluetoothOutputData.pinky_knuckle_right)+", "+String(balancedBluetoothOutputData.index_finger_fingertip)+", "+String(balancedBluetoothOutputData.index_finger_knuckle_left)+")");
             #endif
 
@@ -317,7 +305,7 @@ int zero_value_stabiliser(int inputValue) {
   return inputValue;
 }
 
-int bluetoothButtonHandelr_by_loop(BluetoothOutputData bluetoothOutputData){
+int bluetoothButtonHandler_by_loop(BluetoothOutputData bluetoothOutputData){
       if(bluetoothOutputData.dataReceived) {
         if(bluetoothOutputData.Select) {
           #if defined(DEBUG) || defined(BRIEF_LOG)
@@ -436,9 +424,6 @@ void loop_Handling_formBluetoothConnecting(unsigned long currentMillis) {
   //bt_serial_async(currentMillis);
   if (check_bt_from_loop(currentMillis)==true) {
     Serial.println("Bluetooth connected");
-    //showForm = form_Menu;
-    //menuIsShown = true;
-    //menu.show();
   }
 }
 //--------end of loop_Handling_formBluetoothConnecting--------------------------
@@ -458,22 +443,14 @@ bool check_bt_from_loop(unsigned long currentMillis) {
       if (!bt_State_Connected) {
         if(previous_bt_state!= bt_State_Connected) {
           Serial.println("BT connecting...");
-          //lcd.setCursor(0,3);
-          //lcd.print(" BT connecting.. ");
         }
       }
       else {
         if(previous_bt_state!= bt_State_Connected) {
           Serial.println("BT Paired to RemoteController");
-          //lcd.setCursor(0,3);
-          //lcd.print(" BT Paired to Robot ");
         }
       }
     } else {
-      //if(showForm == form_ShowMeasuredData) {
-        //lcd.setCursor(0,3);
-        //lcd.print(" BT:"+String(bluetooth_On)+  ", Displ:"+String(showDataOnDisplay));
-      //}
   }// end of if BT_ON ==1
   return bt_State_Connected;
 }
