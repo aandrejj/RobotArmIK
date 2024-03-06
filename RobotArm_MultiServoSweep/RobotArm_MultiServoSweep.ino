@@ -283,18 +283,21 @@ void loop() {
 
 BluetoothOutputData bluetoothDataHandler_by_loop(BluetoothOutputData bluetoothOutputData){
       if(bluetoothOutputData.dataReceived) {
-        balancedBluetoothOutputData.dataReceived = bluetoothOutputData.dataReceived
-        balancedBluetoothOutputData.stick1_X = bluetoothOutputData.stick1_X - 525;
-        balancedBluetoothOutputData.stick1_Y = bluetoothOutputData.stick1_Y - 527;
-        balancedBluetoothOutputData.stick2_X = bluetoothOutputData.stick2_X - 514;
-        balancedBluetoothOutputData.stick2_Y = bluetoothOutputData.stick2_Y - 524;
+        balancedBluetoothOutputData.dataReceived = bluetoothOutputData.dataReceived;
+        balancedBluetoothOutputData.menuUp  = bluetoothOutputData.menuUp;
+
+        balancedBluetoothOutputData.stick1_X = bluetoothOutputData.stick1_X - 518;
+        balancedBluetoothOutputData.stick1_Y = bluetoothOutputData.stick1_Y - 516;
+        balancedBluetoothOutputData.stick2_X = bluetoothOutputData.stick2_X - 516;
+        balancedBluetoothOutputData.stick2_Y = bluetoothOutputData.stick2_Y - 514;
 
         balancedBluetoothOutputData.stick1_X = zero_value_stabiliser(balancedBluetoothOutputData.stick1_X);
         balancedBluetoothOutputData.stick1_Y = zero_value_stabiliser(balancedBluetoothOutputData.stick1_Y);
         balancedBluetoothOutputData.stick2_X = zero_value_stabiliser(balancedBluetoothOutputData.stick2_X);
         balancedBluetoothOutputData.stick2_Y = zero_value_stabiliser(balancedBluetoothOutputData.stick2_Y);
         #if defined(DEBUG) || defined(BRIEF_LOG) || defined(MOVEMENT_LOG)
-          Serial.print("bluetoothDataHandler_by_loop: NewDataReceived balancedBluetoothOutputData = {"+ String(balancedBluetoothOutputData.stick1_X)+", "+ String(balancedBluetoothOutputData.stick1_Y)+", "+ String(balancedBluetoothOutputData.stick2_X)+", "+ String(balancedBluetoothOutputData.stick2_Y)+"}.");
+          //Serial.print("bluetoothDataHandler_by_loop: NewDataReceived balancedBluetoothOutputData = ");
+          //Serial.print("{"+ String(balancedBluetoothOutputData.stick1_X)+", "+ String(balancedBluetoothOutputData.stick1_Y)+", "+ String(balancedBluetoothOutputData.stick2_X)+", "+ String(balancedBluetoothOutputData.stick2_Y)+"}.");
         #endif
       } else {
         bluetoothOutputData.dataReceived = false;
@@ -316,6 +319,16 @@ int bluetoothButtonHandler_by_loop(BluetoothOutputData bluetoothOutputData){
           #endif
           runRobotArm = buttons.onButton2Clicked(runRobotArm) ;
         }
+        if(bluetoothOutputData.menuUp) {
+          if (initializationDone == 1) {
+          #if defined(DEBUG) || defined(BRIEF_LOG)
+            Serial.println("bluetoothDataHandler_by_loop: Reset Position to initial");
+          #endif  
+          goTo_initialization_position();
+          } else {
+            Serial.println("bluetoothDataHandler_by_loop: SKIP SKIP. GoTo_initialization_position requested, but hand is not initialized!!!  Initialize first.");
+          }
+        }
       }
   return runRobotArm;
 }
@@ -325,19 +338,19 @@ GripPositionXYZ addMovementsToPosition(GripPositionXYZ _currentGripPosition, Blu
 
   _currentGripPosition.gripX     = constrain((_currentGripPosition.gripX + (balancedBluetoothOutputData.stick1_X / positionDivider)), -89 , 89);
   _currentGripPosition.gripY     = constrain((_currentGripPosition.gripY + (balancedBluetoothOutputData.stick1_Y / positionDivider)), -89 , 89);
-  _currentGripPosition.gripZ     = constrain((_currentGripPosition.gripZ + (balancedBluetoothOutputData.stick2_X / positionDivider)), -89 , 89);
-  _currentGripPosition.gripWidth = constrain((_currentGripPosition.gripWidth + (balancedBluetoothOutputData.stick2_Y / positionDivider)), -0 , 50);
+  _currentGripPosition.gripZ     = constrain((_currentGripPosition.gripZ + (balancedBluetoothOutputData.stick2_Y / positionDivider)), -89 , 89);
+  _currentGripPosition.gripWidth = constrain((_currentGripPosition.gripWidth + (balancedBluetoothOutputData.stick2_X / positionDivider)), -40 , 50);
   return _currentGripPosition;
 }
 //-------------------bluetooth_movement_by_loop---------------------
 void bluetooth_movement_by_loop(){
   if(bluetoothOutputData.dataReceived) {
     #if defined(DEBUG) || defined(BRIEF_LOG) || defined(MOVEMENT_LOG)
-      Serial.print("bluetooth_movement_by_loop: after linearRampXYZ.update() OLD currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
+      //Serial.print("bluetooth_movement_by_loop: after linearRampXYZ.update() OLD currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
     #endif
     currentGripPosition = addMovementsToPosition(currentGripPosition, balancedBluetoothOutputData);   //linearRampXYZ.update();
     #if defined(DEBUG)  || defined(BRIEF_LOG) || defined(MOVEMENT_LOG)
-      Serial.println(" |  NEW currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
+      //Serial.println(" |  NEW currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+"}.");
     #endif
     currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
     servosManager.updateServos(currentArmAngles);   // send pulses to servos.  update servos according to InverseKinematics Values      
@@ -418,9 +431,24 @@ void servo_initialization_by_loop() {
     initializationDone = 1;
     delay(100);+
     Serial.println("servo_initialization_by_loop: Servo Initialization  DONE. (initializationDone =1) Press Button to start...-----------------------------------------");
+  } else {
+    Serial.println("servo_initialization_by_loop: SKIP. Allready  inintialised!!!! SKIP -----------------------------------------");
   }
 }
 //------------------end of servo_initialization_by_loop--------------------------
+
+//------------------goTo_initialization_position--------------------------
+void goTo_initialization_position() {
+    startArmAngles = servosManager.ServoInitialization(servo1PPos, servo2PPos, servo3PPos, servo4PPos, servo5PPos, servo6PPos,SERVO_MIN_MILISEC ,SERVO_MAX_MILISEC );
+    currentGripPosition = inverseKinematics.convertAngleToPosXYZ(startArmAngles);
+    #if defined(DEBUG) || defined(BRIEF_LOG)
+      Serial.println("goTo_initialization_position():  currentGripPosition (X,Y,Z) = ("+String(currentGripPosition.gripX)+", "+String(currentGripPosition.gripY)+", "+String(currentGripPosition.gripZ)+" ), Angles (Spin, Tilt, Open) = ("+String(currentGripPosition.gripSpinAngle) +", "+String(currentGripPosition.gripTiltAngle)+", "+String(currentGripPosition.gripWidth)+"), duration="+String(currentGripPosition.duration)+", movesScriptEnd = "+String(currentGripPosition.movesScriptEnd));     
+    #endif
+    currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
+    servosManager.updateServos(currentArmAngles);   // send pulses to servos.  update servos according to InverseKinematics Values
+  
+}//------------------end of goTo_initialization_position--------------------------
+
 
 //------------loop_Handling_formBluetoothConnecting----------------------------
 void loop_Handling_formBluetoothConnecting(unsigned long currentMillis) {
