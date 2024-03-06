@@ -91,10 +91,10 @@ SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
         */
 
         bluetoothOutputData.dataReceived = true;
-        bluetoothOutputData.index_finger_knuckle_right = mydata_remote.index_finger_knuckle_right;
-        bluetoothOutputData.pinky_knuckle_right = mydata_remote.pinky_knuckle_right;
-        bluetoothOutputData.index_finger_fingertip = mydata_remote.index_finger_fingertip;
-        bluetoothOutputData.index_finger_knuckle_left = mydata_remote.index_finger_knuckle_left;
+        bluetoothOutputData.stick1_X = mydata_remote.stick1_X;
+        bluetoothOutputData.stick1_Y = mydata_remote.stick1_Y;
+        bluetoothOutputData.stick2_X = mydata_remote.stick2_X;
+        bluetoothOutputData.stick2_Y = mydata_remote.stick2_Y;
         bluetoothOutputData.Select  = mydata_remote.Select;
 
         /*
