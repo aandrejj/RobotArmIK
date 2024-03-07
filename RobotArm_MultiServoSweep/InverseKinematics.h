@@ -12,7 +12,7 @@
 */
 #include "RampOnce.h"
 //#define DEBUG         //debug logging
-//#define BRIEF_LOG     //just a few logs
+//#define BRIEF_LOG_IKM     //just a few logs
 
 #define MATH_PI 3.14159265
 

@@ -67,16 +67,11 @@ SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
   }
 
   BluetoothOutputData BluetoothFactory::BT_loop(unsigned long currentMillis) {
-    //unsigned long currentMillis = millis();
-    //if ((currentMillis - BluetoothFactory::previousBtMillis) >= BluetoothFactory::interval) {  
-      // start timed event for read and send
 
-      //BluetoothFactory::previousBtMillis = currentMillis;
       BluetoothOutputData bluetoothOutputData;
       bluetoothOutputData.dataReceived = false;
 
       if(ET2.receiveData()){                                        // main data receive
-        //BluetoothFactory::previousSafetyMillis = currentMillis; 
 
         mydata_send.mode  = mode;
         mydata_send.count = count;
@@ -91,18 +86,13 @@ SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
         */
 
         bluetoothOutputData.dataReceived = true;
-        bluetoothOutputData.index_finger_knuckle_right = mydata_remote.index_finger_knuckle_right;
-        bluetoothOutputData.pinky_knuckle_right = mydata_remote.pinky_knuckle_right;
-        bluetoothOutputData.index_finger_fingertip = mydata_remote.index_finger_fingertip;
-        bluetoothOutputData.index_finger_knuckle_left = mydata_remote.index_finger_knuckle_left;
+        bluetoothOutputData.stick1_X = mydata_remote.stick1_X;
+        bluetoothOutputData.stick1_Y = mydata_remote.stick1_Y;
+        bluetoothOutputData.stick2_X = mydata_remote.stick2_X;
+        bluetoothOutputData.stick2_Y = mydata_remote.stick2_Y;
         bluetoothOutputData.Select  = mydata_remote.Select;
+        bluetoothOutputData.menuUp = mydata_remote.menuUp;
 
-        /*
-        servo01_constrained = constrain(mydata_remote.index_finger_knuckle_right, 0, 1023);
-        servo02_constrained = constrain(mydata_remote.pinky_knuckle_right, 0, 1023);
-        servo03_constrained = constrain(mydata_remote.index_finger_fingertip, 0, 1023);
-        servo04_constrained = constrain(mydata_remote.index_finger_knuckle_left, 0, 1023);
-        */
 
         // end of receive data
       } 
@@ -111,13 +101,5 @@ SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
       //}
 
       count = count + 1;                                              // update count for remote monitoring
-      //return mydata_remote;
-    /*
-    }  // end of timed event Receive/Send
-
-    if (currentMillis - BluetoothFactory::previousServoMillis >= BluetoothFactory::servoInterval) {  // start timed event for Servos  (200 ms)
-      BluetoothFactory::previousServoMillis = currentMillis;
-    }
-    */
     return bluetoothOutputData;
 }

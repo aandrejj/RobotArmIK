@@ -35,24 +35,24 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
         //pwm.setPWM( 6, 0, armServoAngles.gripAngle);
 
-    //if(armServoAngles.baseAngle != previousArmServoAngles.baseAngle) {
+    if(armServoAngles.baseAngle != previousArmServoAngles.baseAngle) {
       pwm.setPWM( 1, 0, angleToPulse(armServoAngles.baseAngle));
-    //}
-    //if(armServoAngles.arm1Angle != previousArmServoAngles.arm1Angle) {
+    }
+    if(armServoAngles.arm1Angle != previousArmServoAngles.arm1Angle) {
       pwm.setPWM( 2, 0, angleToPulse(armServoAngles.arm1Angle));
-    //}
-    //if(armServoAngles.arm2Angle != previousArmServoAngles.arm2Angle) {
+    }
+    if(armServoAngles.arm2Angle != previousArmServoAngles.arm2Angle) {
       pwm.setPWM( 3, 0, angleToPulse(armServoAngles.arm2Angle));
-    //}
-    //if(armServoAngles.gripSpinAngle != previousArmServoAngles.gripSpinAngle) {
+    }
+    if(armServoAngles.gripSpinAngle != previousArmServoAngles.gripSpinAngle) {
       pwm.setPWM( 4, 0, angleToPulse(armServoAngles.gripSpinAngle));
-    //}
-    //if(armServoAngles.gripTiltAngle != previousArmServoAngles.gripTiltAngle) {
+    }
+    if(armServoAngles.gripTiltAngle != previousArmServoAngles.gripTiltAngle) {
       pwm.setPWM( 5, 0, angleToPulse(armServoAngles.gripTiltAngle));
-    //}
-    //if(armServoAngles.gripAngle != previousArmServoAngles.gripAngle) {
+    }
+    if(armServoAngles.gripAngle != previousArmServoAngles.gripAngle) {
       pwm.setPWM( 6, 0, angleToPulse(armServoAngles.gripAngle));
-    //}
+    }
     previousArmServoAngles = armServoAngles;
   }
   //--------------------end of updateServo-----------------------------
@@ -80,16 +80,16 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
       Serial.println("ServosManager::ServoInitialization:  Robot arm initial position");
     #endif
 	  
-	  delay(20);
-    pwm.setPWM( 1, 0, angleToPulse(pservo1Pos));
-    pwm.setPWM( 2, 0, angleToPulse(pservo2Pos));
-    pwm.setPWM( 3, 0, angleToPulse(pservo3Pos));
-    pwm.setPWM( 4, 0, angleToPulse(pservo4Pos));
-    pwm.setPWM( 5, 0, angleToPulse(pservo5Pos));
-    pwm.setPWM( 6, 0, angleToPulse(pservo6Pos));
+	  //delay(20);
+    //pwm.setPWM( 1, 0, angleToPulse(pservo1Pos));
+    //pwm.setPWM( 2, 0, angleToPulse(pservo2Pos));
+    //pwm.setPWM( 3, 0, angleToPulse(pservo3Pos));
+    //pwm.setPWM( 4, 0, angleToPulse(pservo4Pos));
+    //pwm.setPWM( 5, 0, angleToPulse(pservo5Pos));
+    //pwm.setPWM( 6, 0, angleToPulse(pservo6Pos));
       
 	  #if defined(DEBUG) || defined(BRIEF_LOG) 
-	    Serial.println("ServosManager::ServoInitialization: Servos positioned to default positions");
+	    //Serial.println("ServosManager::ServoInitialization: Servos positioned to default positions");
     #endif
     
     previousArmServoAngles.baseAngle      = pservo1Pos; //zakladna

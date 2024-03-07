@@ -34,11 +34,12 @@
 
 
 typedef struct {
-  int index_finger_knuckle_right;
-  int pinky_knuckle_right;
-  int index_finger_fingertip;
-  int index_finger_knuckle_left;
+  int stick1_X;
+  int stick1_Y;
+  int stick2_X;
+  int stick2_Y;
   bool Select; 
+  bool menuUp;
   bool  dataReceived;
 }BluetoothOutputData;
 
