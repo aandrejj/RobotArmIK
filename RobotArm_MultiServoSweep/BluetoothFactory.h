@@ -38,9 +38,22 @@ typedef struct {
   int stick1_Y;
   int stick2_X;
   int stick2_Y;
+  
   bool Select; 
   bool menuUp;
+  
   bool  dataReceived;
+
+  bool navKeyUp    ;
+  bool navKeyDown  ;
+  bool navKeyLeft  ;
+  bool navKeyRight ;
+  bool navKeyMiddle;
+  bool navKeySet   ;
+  bool navKeyReset ;
+
+
+
 }BluetoothOutputData;
 
 
