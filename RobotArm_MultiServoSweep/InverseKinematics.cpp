@@ -22,11 +22,7 @@ int InverseKinematics::microsecondsToAngle(double microseconds) {
   return (int)val;
 }
 
-//ArmServoMicrosec InverseKinematics::moveToAngle2(ArmServoAngles armServoAngles) {
-//	return InverseKinematics::moveToAngle((double)armServoAngles.baseAngle, (double)armServoAngles.arm1Angle, (double)armServoAngles.arm2Angle, armServoAngles.gripSpinAngle, armServoAngles.gripTiltAngle, (double)armServoAngles.gripAngle, armServoAngles.movesScriptEnd);
-//}
-
-ArmServoMicrosec InverseKinematics::moveToAngle_msec(double b, double a1, double a2, double gripSpinAngle, double gripTiltAngle, double g, double duration) {
+ArmServoMicrosec InverseKinematics::move_ToAngle_msec(double b, double a1, double a2, double gripSpinAngle, double gripTiltAngle, double g, double duration) {
   
   //https://www.arduino.cc/reference/en/libraries/servo/writemicroseconds/
   //value of 1000 is fully counter-clockwise, 2000 is fully clockwise, and 1500 is in the middle.
@@ -46,13 +42,13 @@ ArmServoMicrosec InverseKinematics::moveToAngle_msec(double b, double a1, double
   //---------unused yet---------------------------------------
   
   #ifdef DEBUG 
-    Serial.println("InverseKinematics::moveToAngle_msec(): b             = "+String(b)            +", baseMicrosec       = "+String(armServoMicrosec.baseMicrosec)+".");
-    Serial.println("InverseKinematics::moveToAngle_msec(): a1            = "+String(a1)           +", arm1Microsec       = "+String(armServoMicrosec.arm1Microsec)+".");
-    Serial.println("InverseKinematics::moveToAngle_msec(): a2            = "+String(a2)           +", arm2Microsec       = "+String(armServoMicrosec.arm2Microsec)+".");
-    Serial.println("InverseKinematics::moveToAngle_msec(): gripSpinAngle = "+String(gripSpinAngle)+", gripSpinMicrosec = "+String(armServoMicrosec.gripSpinMicrosec)+".");
-    Serial.println("InverseKinematics::moveToAngle_msec(): gripTiltAngle = "+String(gripTiltAngle)+", gripTiltMicrosec = "+String(armServoMicrosec.gripTiltMicrosec)+".");
-    Serial.println("InverseKinematics::moveToAngle_msec(): g             = "+String(g)            +", gripMicrosec     = "+String(armServoMicrosec.gripMicrosec)+".");
-    Serial.println("InverseKinematics::moveToAngle_msec(): duration      = "+String(duration)     +", duration         = "+String(armServoMicrosec.duration)+".");
+    Serial.println("InverseKinematics::move_ToAngle_msec(): b             = "+String(b)            +", baseMicrosec       = "+String(armServoMicrosec.baseMicrosec)+".");
+    Serial.println("InverseKinematics::move_ToAngle_msec(): a1            = "+String(a1)           +", arm1Microsec       = "+String(armServoMicrosec.arm1Microsec)+".");
+    Serial.println("InverseKinematics::move_ToAngle_msec(): a2            = "+String(a2)           +", arm2Microsec       = "+String(armServoMicrosec.arm2Microsec)+".");
+    Serial.println("InverseKinematics::move_ToAngle_msec(): gripSpinAngle = "+String(gripSpinAngle)+", gripSpinMicrosec = "+String(armServoMicrosec.gripSpinMicrosec)+".");
+    Serial.println("InverseKinematics::move_ToAngle_msec(): gripTiltAngle = "+String(gripTiltAngle)+", gripTiltMicrosec = "+String(armServoMicrosec.gripTiltMicrosec)+".");
+    Serial.println("InverseKinematics::move_ToAngle_msec(): g             = "+String(g)            +", gripMicrosec     = "+String(armServoMicrosec.gripMicrosec)+".");
+    Serial.println("InverseKinematics::move_ToAngle_msec(): duration      = "+String(duration)     +", duration         = "+String(armServoMicrosec.duration)+".");
     
   #endif
 
@@ -159,7 +155,7 @@ ArmServoAngles InverseKinematics::moveToPosXYZ(GripPositionXYZ positionXYZ) {
     Serial.println("InverseKinematics::moveToPos(): gripAngle     = "+String(gripAngle)+".");
   #endif
   if (positionXYZ.showLog) {
-    Serial.print("InverseKinematics::moveToPos(): b,a1,a2,gripAngle:"+String(b)+","+String(a1)+","+String(a2)+","+String(gripAngle)+".");
+    Serial.print("InverseKinematics::moveToPosXYZ(): b,a1,a2,gripAngle:"+String(b)+","+String(a1)+","+String(a2)+","+String(gripAngle)+".");
   }
   
   return moveToAngle(b, a1, a2, positionXYZ.gripSpinAngle, newGripTiltAngle, gripAngle, positionXYZ.duration,positionXYZ.showLog);

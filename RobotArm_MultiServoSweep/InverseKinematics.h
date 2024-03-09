@@ -28,7 +28,7 @@ public:
   
   int microsecondsToAngle(double microseconds);
 
-  ArmServoMicrosec moveToAngle_msec(double b, double a1, double a2, double gripSpinAngle, double gripTiltAngle, double g, double duration);
+  ArmServoMicrosec move_ToAngle_msec(double b, double a1, double a2, double gripSpinAngle, double gripTiltAngle, double g, double duration);
   ArmServoAngles   moveToAngle     (double b, double a1, double a2, double gripSpinAngle, double gripTiltAngle, double g, double duration, bool showLog);
 
   //ArmServoMicrosec moveToAngle2(ArmServoAngles armServoAngles);
