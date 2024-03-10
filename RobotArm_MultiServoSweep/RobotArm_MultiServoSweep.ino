@@ -344,7 +344,16 @@ int bluetoothButtonHandler_by_loop(BluetoothOutputData bluetoothOutputData){
   return runRobotArm;
 }
 
-#define buttonStepX 0.5;
+#define MIN_X   0
+#define MAX_X  89
+#define MIN_Y -89
+#define MAX_Y  89
+#define MIN_Z -89
+#define MAX_Z  89
+#define MIN_W -40
+#define MAX_W  50
+
+#define buttonStepX 1.0;
 #define buttonStepY 0.5;
 #define buttonStepZ 0.5;
 GripPositionXYZ addButtonsToPosition(GripPositionXYZ _currentGripPosition, BluetoothOutputData bluetoothOutputData, BluetoothOutputData previousBluetoothOutputData){
@@ -396,6 +405,12 @@ GripPositionXYZ addButtonsToPosition(GripPositionXYZ _currentGripPosition, Bluet
 
     #if defined(DEBUG)  || defined(BRIEF_LOG) || defined(MOVEMENT_LOG)
     if(changed==true) {
+
+      _currentGripPosition.gripX     = constrain(_currentGripPosition.gripX,     MIN_X, MAX_X);
+      _currentGripPosition.gripY     = constrain(_currentGripPosition.gripY,     MIN_Y, MAX_Y);
+      _currentGripPosition.gripZ     = constrain(_currentGripPosition.gripZ,     MIN_Z, MAX_Z);
+      _currentGripPosition.gripWidth = constrain(_currentGripPosition.gripWidth, MIN_W, MAX_W);
+      
       _currentGripPosition.showLog = true;
       Serial.print("addButtonsToPosition: currentGripPosition = {"+ String(_currentGripPosition.gripX)+", "+ String(_currentGripPosition.gripY)+", "+ String(_currentGripPosition.gripZ)+", "+ String(_currentGripPosition.gripSpinAngle)+", "+ String(_currentGripPosition.gripTiltAngle)+", "+ String(_currentGripPosition.gripWidth)+"}.");
     }
@@ -412,15 +427,23 @@ GripPositionXYZ addMovementsToPosition(GripPositionXYZ _currentGripPosition, Blu
   zIncrement = balancedBluetoothOutputData.stick2_Y / positionDivider;
   wIncrement = balancedBluetoothOutputData.stick2_X / positionDivider;
 
-  _currentGripPosition.gripX     = constrain((_currentGripPosition.gripX     + xIncrement), -89 , 89);
-  _currentGripPosition.gripY     = constrain((_currentGripPosition.gripY     + yIncrement), -89 , 89);
-  _currentGripPosition.gripZ     = constrain((_currentGripPosition.gripZ     + zIncrement), -89 , 89);
-  _currentGripPosition.gripWidth = constrain((_currentGripPosition.gripWidth + wIncrement), -40 , 50);
+  //_currentGripPosition.gripX     = _currentGripPosition.gripX     + xIncrement;
+  //_currentGripPosition.gripY     = _currentGripPosition.gripY     + yIncrement;
+  //_currentGripPosition.gripZ     = _currentGripPosition.gripZ     + zIncrement;
+  //_currentGripPosition.gripWidth = _currentGripPosition.gripWidth + wIncrement;
+ // _currentGripPosition = maxMinLimiter(_currentGripPosition);
+
+
+  _currentGripPosition.gripX     = constrain((_currentGripPosition.gripX     + xIncrement), MIN_X, MAX_X);
+  _currentGripPosition.gripY     = constrain((_currentGripPosition.gripY     + yIncrement), MIN_Y, MAX_Y);
+  _currentGripPosition.gripZ     = constrain((_currentGripPosition.gripZ     + zIncrement), MIN_Z, MAX_Z);
+  _currentGripPosition.gripWidth = constrain((_currentGripPosition.gripWidth + wIncrement), MIN_W, MAX_W);
 
 //  _currentGripPosition.gripX     = constrain((_currentGripPosition.gripX + (balancedBluetoothOutputData.stick1_X / positionDivider)), -89 , 89);
 //  _currentGripPosition.gripY     = constrain((_currentGripPosition.gripY + (balancedBluetoothOutputData.stick1_Y / positionDivider)), -89 , 89);
 //  _currentGripPosition.gripZ     = constrain((_currentGripPosition.gripZ + (balancedBluetoothOutputData.stick2_Y / positionDivider)), -89 , 89);
 //  _currentGripPosition.gripWidth = constrain((_currentGripPosition.gripWidth + (balancedBluetoothOutputData.stick2_X / positionDivider)), -40 , 50);
+
 
   #if defined(DEBUG)  || defined(BRIEF_LOG) || defined(MOVEMENT_LOG)
     if(xIncrement!= 0  || yIncrement != 0 || zIncrement != 0 || wIncrement != 0) {
@@ -432,6 +455,13 @@ GripPositionXYZ addMovementsToPosition(GripPositionXYZ _currentGripPosition, Blu
   return _currentGripPosition;
 }
 
+GripPositionXYZ  maxMinLimiter(GripPositionXYZ _currentGripPosition) {
+  _currentGripPosition.gripX     = constrain(_currentGripPosition.gripX, 0 , 89);
+  _currentGripPosition.gripY     = constrain(_currentGripPosition.gripY, -89 , 89);
+  _currentGripPosition.gripZ     = constrain(_currentGripPosition.gripZ, -89 , 89);
+  _currentGripPosition.gripWidth = constrain(_currentGripPosition.gripWidth, -40 , 50);
+
+}
 //-------------------bluetooth_movement_by_loop---------------------
 void bluetooth_movement_by_loop(){
   if(bluetoothOutputData.dataReceived) {
