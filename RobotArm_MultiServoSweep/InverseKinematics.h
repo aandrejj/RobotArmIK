@@ -35,7 +35,7 @@ public:
 
   ArmServoAngles moveToPos(double x, double y, double z, double gripSpinAngle, double gripTiltAngle, double g, bool movesScriptEnd, double duration);
 
-  ArmServoAngles moveToPosXYZ(GripPositionXYZ positionXYZ);
+  ArmServoAngles moveToPosXYZ(GripPositionXYZ positionXYZ, String textToLog);
   
   GripPositionXYZ convertAngleToPosXYZ(ArmServoAngles armServoAngles);
   

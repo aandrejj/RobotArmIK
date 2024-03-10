@@ -120,7 +120,7 @@ GripPositionXYZ InverseKinematics::convertAngleToPosXYZ(ArmServoAngles armServoA
 }
 //----------------------------------------------------------------------------------------
 
-ArmServoAngles InverseKinematics::moveToPosXYZ(GripPositionXYZ positionXYZ) {
+ArmServoAngles InverseKinematics::moveToPosXYZ(GripPositionXYZ positionXYZ,String textToLog) {
   #if defined(DEBUG)
     Serial.println("InverseKinematics::moveToPosXYZ: InputParams positionXYZ  (X,Y,Z) = ("+String(positionXYZ.gripX)+", "+String(positionXYZ.gripY)+", "+String(positionXYZ.gripZ)+" ), Grip (Spin, Tilt, Width) = ("+String(positionXYZ.gripSpinAngle) +", "+String(positionXYZ.gripTiltAngle)+", "+String(positionXYZ.gripWidth)+"), duration="+String(positionXYZ.duration)+", movesScriptEnd = "+String(positionXYZ.movesScriptEnd));
   #endif
@@ -155,8 +155,8 @@ ArmServoAngles InverseKinematics::moveToPosXYZ(GripPositionXYZ positionXYZ) {
     Serial.println("InverseKinematics::moveToPos(): gripAngle     = "+String(gripAngle)+".");
   #endif
   if (positionXYZ.showLog) {
-    Serial.print("InverseKinematics::moveToPosXYZ(): b,a1,a2,gripAngle:"+String(b)+","+String(a1)+","+String(a2)+","+String(gripAngle)+".");
+    Serial.print("InverseKinematics::moveToPosXYZ(): b,a1,a2,gripAngle:"+String(b)+","+String(a1)+","+String(a2)+","+String(gripAngle)+". "+textToLog);
   }
   
-  return moveToAngle(b, a1, a2, positionXYZ.gripSpinAngle, newGripTiltAngle, gripAngle, positionXYZ.duration,positionXYZ.showLog);
+  return moveToAngle(b, a1, a2, positionXYZ.gripSpinAngle, newGripTiltAngle, gripAngle, positionXYZ.duration, positionXYZ.showLog);
 }
