@@ -126,11 +126,11 @@ boolean previousSensorVal = LOW;
 bool partialMovementIsDone =  true;//false;
 
 ArmServoAngles servosInitialPosition;
-int servo1PPos = 90; //zakladna
-int servo2PPos = 160;//spodne hnede rameno
+int servo1PPos = 85; //zakladna
+int servo2PPos = 50;//160;//spodne hnede rameno
 int servo3PPos = 13; //horne  biela rameno
 int servo4PPos = 90;//ruka nabok  100 = zhruba vodorovne
-int servo5PPos = 72; //ruka hore
+int servo5PPos = 25; //ruka hore
 int servo6PPos = 110; //ruka otvorena= 100, zatvorena = 60
 
 unsigned long currentMillis;
@@ -521,9 +521,7 @@ int sequence_movement_by_loop(){
         Serial.println("sequence_movement_by_loop: movesScriptEnd!!!");
         runRobotArm = runRobotArm - 1;  // = 2
         targetGripPosition = roboArmTurn.resetMovescript();
-        
       }
-      
     } 
     else 
     {
