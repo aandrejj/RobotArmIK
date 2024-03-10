@@ -1,5 +1,7 @@
 /*        
        DIY Arduino Robot Arm 
+       https://www.youtube.com/watch?v=_B3gWd3A_SI
+
 */
 
 //
@@ -8,11 +10,22 @@
 //         https://github.com/siteswapjuggler/RAMP/blob/master/examples/ramp_servo/ramp_servo.ino
 //        
 //         https://github.com/roTechnic/InverseKinematicArm
-//         https://github.com/roTechnic/InverseKinematicArm/blob/main/inverse_kinematics.ino
+//         https://github.com/roTechnic/InverseKinematicArm/blob/main/inverse_kinematics.ino  <-origin of method moveToPosXYZ  is here as moveToPos
+//  Easy  Inverse kinematics for robot armServoAngles
+//    https://www.youtube.com/watch?v=Q-UeYEpwXXU     <-  pictures from here 
 //
 //  https://github.com/aandrejj/RobotArmIK/pulls
 
+/*
+RemoteController by James Bruton
+Building Robot X #10  
+        https://www.youtube.com/watch?v=B2bUlDf4aNE
+        https://github.com/XRobots/RobotX/tree/master/CAD
 
+Open Dog  Part1
+  https://github.com/XRobots/openDog/tree/master/Part1/CAD
+
+*/
 
 #include "ServosManager.h"
 #include "InverseKinematics.h"
@@ -346,16 +359,16 @@ int bluetoothButtonHandler_by_loop(BluetoothOutputData bluetoothOutputData){
 
 #define MIN_X   0
 #define MAX_X  89
-#define MIN_Y -89
-#define MAX_Y  89
+#define MIN_Y -45
+#define MAX_Y  45
 #define MIN_Z -89
 #define MAX_Z  89
 #define MIN_W -40
 #define MAX_W  50
 
 #define buttonStepX 1.0;
-#define buttonStepY 0.5;
-#define buttonStepZ 0.5;
+#define buttonStepY 1.0;
+#define buttonStepZ 1.0;
 GripPositionXYZ addButtonsToPosition(GripPositionXYZ _currentGripPosition, BluetoothOutputData bluetoothOutputData, BluetoothOutputData previousBluetoothOutputData){
   bool changed = false;
   if(bluetoothOutputData.navKeyMiddle == 0) {

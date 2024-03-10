@@ -14,7 +14,8 @@
 //#define DEBUG         //debug logging
 //#define BRIEF_LOG_IKM     //just a few logs
 
-#define MATH_PI 3.14159265
+#define MATH_PI     3.14159265
+#define M_180_DIV_PI 57.29577951
 
 class InverseKinematics {
 public:
