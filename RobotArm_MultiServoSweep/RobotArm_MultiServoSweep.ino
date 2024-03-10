@@ -129,7 +129,7 @@ ArmServoAngles servosInitialPosition;
 int servo1PPos = 85; //zakladna
 int servo2PPos = 50;//160;//spodne hnede rameno
 int servo3PPos = 13; //horne  biela rameno
-int servo4PPos = 90;//ruka nabok  100 = zhruba vodorovne
+int servo4PPos = 0;//ruka nabok  100 = zhruba vodorovne
 int servo5PPos = 25; //ruka hore
 int servo6PPos = 110; //ruka otvorena= 100, zatvorena = 60
 
@@ -206,8 +206,6 @@ void setup() {
 
 }
 //----------------------end of setup-----------------------------------
-
-
 
 //-----------------loop-------------------------------------------------
 void loop() {

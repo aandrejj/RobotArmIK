@@ -78,7 +78,7 @@ ArmServoAngles InverseKinematics::moveToAngle(double b, double a1, double a2, do
   #endif
   ArmServoAngles armServoAngles; 
   armServoAngles.baseAngle     = (b + 90);
-  armServoAngles.arm1Angle     = (180 - a1);
+  armServoAngles.arm1Angle     = a1; //(180 - a1);
   armServoAngles.arm2Angle     = (-40 + a2);
 
   armServoAngles.gripSpinAngle = (gripSpinAngle + 90);
@@ -119,7 +119,7 @@ ArmServoAngles InverseKinematics::moveToPosXYZ(GripPositionXYZ positionXYZ) {
   
   double a1 = phi + theta; // angle for first part of the arm
   //double a2 = phi - theta; // angle for second part of the arm
-  double a2 =  (0 - a1) + theta;
+  double a2 =  (180 - a1) + theta;
   //double a2 =  theta - a1;
   //pictures here :  https://www.youtube.com/watch?v=Q-UeYEpwXXU
 
@@ -138,7 +138,7 @@ ArmServoAngles InverseKinematics::moveToPosXYZ(GripPositionXYZ positionXYZ) {
     Serial.println("InverseKinematics::moveToPos(): gripAngle     = "+String(gripAngle)+".");
   #endif
   if (positionXYZ.showLog) {
-    Serial.print("InverseKinematics::moveToPosXYZ(): b,l,a1,a2,g: "+String(b)+", "+String(l)+", "+String(a1)+","+String(a2)+","+String(gripAngle)+".");
+    Serial.print("InverseKinematics::moveToPosXYZ() b:"+String(b)+", l:"+String(l)+", h:"+String(h)+", phi:"+String(phi)+", theta:"+String(theta)+", a1:"+String(a1)+", a2:"+String(a2)+", g:"+String(gripAngle)+".");
   }
   return moveToAngle(b, a1, a2, positionXYZ.gripSpinAngle, newGripTiltAngle, gripAngle, positionXYZ.duration, positionXYZ.showLog);
 }
