@@ -144,6 +144,11 @@ unsigned long  currentStateDuration;
 bool LedIsBlinking = true;
 bool BtLedIsSteadyOn = false;
 
+float xIncrement;
+float yIncrement;
+float zIncrement;
+float wIncrement;
+
 //----------------------setup-------------------------------------------
 void setup() {
   // Open serial communications and wait for port to open:
@@ -182,7 +187,7 @@ void setup() {
   servosManager.begin();
 
   currentGripPosition.showLog = false;
-  
+
   inverseKinematics.begin(SERVO_MIN_MILISEC, SERVO_MAX_MILISEC);
   Serial.println("setup: Setup DONE. System is ready to Initialize servos. Press Button to start...");
 
@@ -255,6 +260,8 @@ void loop() {
               Serial.println("loop: balancedBluetoothOutputData= ("+String(balancedBluetoothOutputData.index_finger_knuckle_right)+", "+String(balancedBluetoothOutputData.pinky_knuckle_right)+", "+String(balancedBluetoothOutputData.index_finger_fingertip)+", "+String(balancedBluetoothOutputData.index_finger_knuckle_left)+")");
             #endif
 
+            previousBluetoothOutputData = bluetoothOutputData;
+
             bluetooth_movement_by_loop();
 
             previousBtMillis = currentMillis;
@@ -297,6 +304,7 @@ BluetoothOutputData bluetoothDataHandler_by_loop(BluetoothOutputData bluetoothOu
         balancedBluetoothOutputData.stick1_Y = zero_value_stabiliser(balancedBluetoothOutputData.stick1_Y);
         balancedBluetoothOutputData.stick2_X = zero_value_stabiliser(balancedBluetoothOutputData.stick2_X);
         balancedBluetoothOutputData.stick2_Y = zero_value_stabiliser(balancedBluetoothOutputData.stick2_Y);
+
         #if defined(DEBUG) || defined(BRIEF_LOG) || defined(MOVEMENT_LOG)
           //Serial.print("bluetoothDataHandler_by_loop: NewDataReceived balancedBluetoothOutputData = ");
           //Serial.print("{"+ String(balancedBluetoothOutputData.stick1_X)+", "+ String(balancedBluetoothOutputData.stick1_Y)+", "+ String(balancedBluetoothOutputData.stick2_X)+", "+ String(balancedBluetoothOutputData.stick2_Y)+"}.");
@@ -306,6 +314,7 @@ BluetoothOutputData bluetoothDataHandler_by_loop(BluetoothOutputData bluetoothOu
       }
   return balancedBluetoothOutputData;
 }
+
 int zero_value_stabiliser(int inputValue) {
   if(inputValue > -10 && inputValue <10) {
     inputValue =0;
@@ -335,26 +344,109 @@ int bluetoothButtonHandler_by_loop(BluetoothOutputData bluetoothOutputData){
   return runRobotArm;
 }
 
+#define buttonStepX 0.5;
+#define buttonStepY 0.5;
+#define buttonStepZ 0.5;
+GripPositionXYZ addButtonsToPosition(GripPositionXYZ _currentGripPosition, BluetoothOutputData bluetoothOutputData, BluetoothOutputData previousBluetoothOutputData){
+  bool changed = false;
+  if(bluetoothOutputData.navKeyMiddle == 0) {
+    if(bluetoothOutputData.navKeyUp == 0 && previousBluetoothOutputData.navKeyUp == 1 ) {
+      //x -
+      _currentGripPosition.gripX = _currentGripPosition.gripX - buttonStepX;
+      changed =true;
+    }
+    if(bluetoothOutputData.navKeyDown == 0 && previousBluetoothOutputData.navKeyDown == 1 ) {
+      //x +
+      _currentGripPosition.gripX = _currentGripPosition.gripX + buttonStepX;
+      changed =true;
+    }
+    if(bluetoothOutputData.navKeyLeft == 0 && previousBluetoothOutputData.navKeyLeft == 1 ) {
+      //y-
+      _currentGripPosition.gripY = _currentGripPosition.gripY - buttonStepY;
+      changed =true;
+    }
+    if(bluetoothOutputData.navKeyRight == 0 && previousBluetoothOutputData.navKeyRight == 1 ) {
+      //y+
+      _currentGripPosition.gripY = _currentGripPosition.gripY + buttonStepY;
+      changed =true;
+    }
+  } else {
+    if(bluetoothOutputData.navKeyLeft == 0 && previousBluetoothOutputData.navKeyLeft == 1 ) {
+      //Z-
+      _currentGripPosition.gripZ = _currentGripPosition.gripZ - buttonStepZ;
+      changed =true;
+    }
+    if(bluetoothOutputData.navKeyRight == 0 && previousBluetoothOutputData.navKeyRight == 1 ) {
+      //Z+
+      _currentGripPosition.gripZ = _currentGripPosition.gripZ + buttonStepZ;
+      changed =true;
+    }
+  }
+
+  if(bluetoothOutputData.navKeySet == 0 && previousBluetoothOutputData.navKeySet == 1 ) {
+    //Z-
+    _currentGripPosition.gripZ = _currentGripPosition.gripZ - buttonStepZ;
+    changed =true;
+  }
+  if(bluetoothOutputData.navKeyReset == 0 && previousBluetoothOutputData.navKeyReset == 1 ) {
+    //Z+
+    _currentGripPosition.gripZ = _currentGripPosition.gripZ + buttonStepZ;
+    changed =true;
+  }
+
+    #if defined(DEBUG)  || defined(BRIEF_LOG) || defined(MOVEMENT_LOG)
+    if(changed==true) {
+      _currentGripPosition.showLog = true;
+      Serial.print("addButtonsToPosition: currentGripPosition = {"+ String(_currentGripPosition.gripX)+", "+ String(_currentGripPosition.gripY)+", "+ String(_currentGripPosition.gripZ)+", "+ String(_currentGripPosition.gripSpinAngle)+", "+ String(_currentGripPosition.gripTiltAngle)+", "+ String(_currentGripPosition.gripWidth)+"}.");
+    }
+    #endif
+
+  return _currentGripPosition;
+}
+
 #define positionDivider 80
 GripPositionXYZ addMovementsToPosition(GripPositionXYZ _currentGripPosition, BluetoothOutputData balancedBluetoothOutputData){
 
-  _currentGripPosition.gripX     = constrain((_currentGripPosition.gripX + (balancedBluetoothOutputData.stick1_X / positionDivider)), -89 , 89);
-  _currentGripPosition.gripY     = constrain((_currentGripPosition.gripY + (balancedBluetoothOutputData.stick1_Y / positionDivider)), -89 , 89);
-  _currentGripPosition.gripZ     = constrain((_currentGripPosition.gripZ + (balancedBluetoothOutputData.stick2_Y / positionDivider)), -89 , 89);
-  _currentGripPosition.gripWidth = constrain((_currentGripPosition.gripWidth + (balancedBluetoothOutputData.stick2_X / positionDivider)), -40 , 50);
+  xIncrement = balancedBluetoothOutputData.stick1_X / positionDivider;
+  yIncrement = balancedBluetoothOutputData.stick1_Y / positionDivider;
+  zIncrement = balancedBluetoothOutputData.stick2_Y / positionDivider;
+  wIncrement = balancedBluetoothOutputData.stick2_X / positionDivider;
+
+  _currentGripPosition.gripX     = constrain((_currentGripPosition.gripX     + xIncrement), -89 , 89);
+  _currentGripPosition.gripY     = constrain((_currentGripPosition.gripY     + yIncrement), -89 , 89);
+  _currentGripPosition.gripZ     = constrain((_currentGripPosition.gripZ     + zIncrement), -89 , 89);
+  _currentGripPosition.gripWidth = constrain((_currentGripPosition.gripWidth + wIncrement), -40 , 50);
+
+//  _currentGripPosition.gripX     = constrain((_currentGripPosition.gripX + (balancedBluetoothOutputData.stick1_X / positionDivider)), -89 , 89);
+//  _currentGripPosition.gripY     = constrain((_currentGripPosition.gripY + (balancedBluetoothOutputData.stick1_Y / positionDivider)), -89 , 89);
+//  _currentGripPosition.gripZ     = constrain((_currentGripPosition.gripZ + (balancedBluetoothOutputData.stick2_Y / positionDivider)), -89 , 89);
+//  _currentGripPosition.gripWidth = constrain((_currentGripPosition.gripWidth + (balancedBluetoothOutputData.stick2_X / positionDivider)), -40 , 50);
+
+  #if defined(DEBUG)  || defined(BRIEF_LOG) || defined(MOVEMENT_LOG)
+    if(xIncrement!= 0  || yIncrement != 0 || zIncrement != 0 || wIncrement != 0) {
+      ////_currentGripPosition.showLog = true;
+      Serial.print("addMovementsToPosition: currentGripPosition = {"+ String(_currentGripPosition.gripX)+", "+ String(_currentGripPosition.gripY)+", "+ String(_currentGripPosition.gripZ)+", "+ String(_currentGripPosition.gripSpinAngle)+", "+ String(_currentGripPosition.gripTiltAngle)+", "+ String(_currentGripPosition.gripWidth)+"}.");
+    }
+  #endif
+
   return _currentGripPosition;
 }
+
 //-------------------bluetooth_movement_by_loop---------------------
 void bluetooth_movement_by_loop(){
   if(bluetoothOutputData.dataReceived) {
     #if defined(DEBUG) || defined(BRIEF_LOG) || defined(MOVEMENT_LOG)
       //Serial.print("bluetooth_movement_by_loop: after linearRampXYZ.update() OLD currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+","+ String(currentGripPosition.movesScriptEnd)+"}.");
     #endif
-    currentGripPosition = addMovementsToPosition(currentGripPosition, balancedBluetoothOutputData);   //linearRampXYZ.update();
+
+    currentGripPosition = addButtonsToPosition(currentGripPosition, balancedBluetoothOutputData, previousBluetoothOutputData);
+    currentGripPosition = addMovementsToPosition(currentGripPosition, balancedBluetoothOutputData);
+
     #if defined(DEBUG)  || defined(BRIEF_LOG) || defined(MOVEMENT_LOG)
       //Serial.println(" |  NEW currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+"}.");
     #endif
     currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
+    currentGripPosition.showLog = false;
     servosManager.updateServos(currentArmAngles);   // send pulses to servos.  update servos according to InverseKinematics Values      
   }
 }
@@ -381,6 +473,7 @@ int sequence_movement_by_loop(){
         linearRampXYZ.setup();
 
         currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
+        ////currentGripPosition.showLog = false;
       } else {
         Serial.println("sequence_movement_by_loop: movesScriptEnd!!!");
         runRobotArm = runRobotArm - 1;  // = 2
