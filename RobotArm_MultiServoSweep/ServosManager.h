@@ -21,6 +21,7 @@ typedef struct {
   double gripWidth;
   double duration;
   bool movesScriptEnd;
+  bool showLog;
 }GripPositionXYZ;
 
 typedef struct {

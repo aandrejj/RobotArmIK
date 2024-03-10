@@ -180,6 +180,8 @@ void setup() {
   pinMode(13, OUTPUT);
 
   servosManager.begin();
+
+  currentGripPosition.showLog = false;
   
   inverseKinematics.begin(SERVO_MIN_MILISEC, SERVO_MAX_MILISEC);
   Serial.println("setup: Setup DONE. System is ready to Initialize servos. Press Button to start...");
