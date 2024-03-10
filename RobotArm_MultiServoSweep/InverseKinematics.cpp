@@ -33,8 +33,10 @@ GripPositionXYZ InverseKinematics::convertAngleToPosXYZ(ArmServoAngles armServoA
     double l = (OneArmLength * cos((armServoAngles.arm1Angle)*(3.1415926/180))) + (OneArmLength * cos((armServoAngles.arm1Angle+armServoAngles.arm2Angle+armServoAngles.gripTiltAngle)*(3.1415926/180)));
     gripPosition.gripX = l* cos((armServoAngles.baseAngle)*(3.1415926/180));
     gripPosition.gripY = l* sin((armServoAngles.baseAngle)*(3.1415926/180));
-    gripPosition.gripZ = (OneArmLength * cos((armServoAngles.arm1Angle)*(3.1415926/180))) + (OneArmLength * sin((armServoAngles.arm1Angle+armServoAngles.arm2Angle+armServoAngles.gripTiltAngle)*(3.1415926/180)));
+    gripPosition.gripZ = (OneArmLength * cos((armServoAngles.arm1Angle)*(3.1415926/180))) + (OneArmLength * sin((armServoAngles.arm1Angle + armServoAngles.arm2Angle + armServoAngles.gripTiltAngle)*(3.1415926/180)));
     
+    gripPosition.gripTiltAngle = (armServoAngles.arm1Angle + armServoAngles.arm2Angle + armServoAngles.gripTiltAngle)*(3.1415926/180);
+
     gripPosition.gripWidth = 2 * (sin(armServoAngles.gripAngle * (3.1415926/180)) * 30);
     
     /*
@@ -49,9 +51,9 @@ GripPositionXYZ InverseKinematics::convertAngleToPosXYZ(ArmServoAngles armServoA
     gripPosition.movesScriptEnd = false;
     gripPosition.showLog = false;
 		
-	  #if defined(DEBUG) || defined(BRIEF_LOG_IKM)  
+	  //#if defined(DEBUG) || defined(BRIEF_LOG_IKM)  
 	    Serial.println("InverseKinematics::convertAngleToPosXYZ 'back' output:  gripPosition (X,Y,Z) = ("+String(gripPosition.gripX)+", "+String(gripPosition.gripY)+", "+String(gripPosition.gripZ)+" ), Angles (Spin, Tilt, Open) = ("+String(gripPosition.gripSpinAngle) +", "+String(gripPosition.gripTiltAngle)+", "+String(gripPosition.gripWidth)+"), duration="+String(gripPosition.duration)+", movesScriptEnd = "+String(gripPosition.movesScriptEnd));
-    #endif
+    //#endif
 	  #ifdef DEBUG 
 	    Serial.println("convertAngleToPosXYZ: End");
     #endif
