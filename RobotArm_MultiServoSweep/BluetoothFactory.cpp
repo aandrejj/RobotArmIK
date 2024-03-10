@@ -93,7 +93,14 @@ SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
         bluetoothOutputData.Select  = mydata_remote.Select;
         bluetoothOutputData.menuUp = mydata_remote.menuUp;
 
-
+        bluetoothOutputData.navKeyUp = mydata_remote.navKeyUp;
+        bluetoothOutputData.navKeyDown = mydata_remote.navKeyDown;
+        bluetoothOutputData.navKeyLeft = mydata_remote.navKeyLeft;
+        bluetoothOutputData.navKeyRight = mydata_remote.navKeyRight;
+        bluetoothOutputData.navKeyMiddle = mydata_remote.navKeyMiddle;
+        bluetoothOutputData.navKeySet = mydata_remote.navKeySet;
+        bluetoothOutputData.navKeyReset = mydata_remote.navKeyReset;
+        
         // end of receive data
       } 
       //else if(currentMillis - previousSafetyMillis > 200) {         // safeties
