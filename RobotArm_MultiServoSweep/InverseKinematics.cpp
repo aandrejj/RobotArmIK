@@ -1,6 +1,7 @@
 #include "InverseKinematics.h"
 #include "Arduino.h"
 //#include <ArmServos.h>
+#define OneArmLength  120
 
 InverseKinematics::InverseKinematics() {
 }
@@ -28,27 +29,26 @@ GripPositionXYZ InverseKinematics::convertAngleToPosXYZ(ArmServoAngles armServoA
 	    Serial.println("InverseKinematics::convertAngleToPosXYZ'back': Started"); 
       Serial.println("InverseKinematics::convertAngleToPosXYZ'back': input params: armServoAngles:  baseAngle = "+String(armServoAngles.baseAngle)+", arm1Angle = "+ String(armServoAngles.arm1Angle)+", arm2Angle = "+String(armServoAngles.arm2Angle)+", gripSpinAngle = "+ String(armServoAngles.gripSpinAngle)+", gripTiltAngle = "+String(armServoAngles.gripTiltAngle)+", gripAngle = "+String(armServoAngles.gripAngle)+", duration = "+String(armServoAngles.duration)+"." );
     #endif
+    // based on  https://www.youtube.com/watch?v=1-FJhmey7vk   goto video-time: 5:53
+    double l = (OneArmLength * cos((armServoAngles.arm1Angle)*(3.1415926/180))) + (OneArmLength * cos((armServoAngles.arm1Angle+armServoAngles.arm2Angle+armServoAngles.gripTiltAngle)*(3.1415926/180)));
+    gripPosition.gripX = l* cos((armServoAngles.baseAngle)*(3.1415926/180));
+    gripPosition.gripY = l* sin((armServoAngles.baseAngle)*(3.1415926/180));
+    gripPosition.gripZ = (OneArmLength * cos((armServoAngles.arm1Angle)*(3.1415926/180))) + (OneArmLength * sin((armServoAngles.arm1Angle+armServoAngles.arm2Angle+armServoAngles.gripTiltAngle)*(3.1415926/180)));
     
     gripPosition.gripWidth = 2 * (sin(armServoAngles.gripAngle * (3.1415926/180)) * 30);
     
+    /*
     gripPosition.gripX = 10;
     gripPosition.gripY = 0;
     gripPosition.gripZ = 120;
     gripPosition.gripSpinAngle = 0;
     gripPosition.gripTiltAngle = 0;
-    /* gripPosition.gripWidth = 80; */
+    //gripPosition.gripWidth = 80; 
+    */
     gripPosition.duration = armServoAngles.duration;
     gripPosition.movesScriptEnd = false;
     gripPosition.showLog = false;
-	
-	  //ToDo Add math to evaluate all params correctly!!!
-	  #ifdef DEBUG  
-	    Serial.println("InverseKinematics::convertAngleToPosXYZ: ToDo: Implement Math stuff here correctly");
-    #endif
-  
-	
-	//double phi = armServoAngles.arm1Angle - armServoAngles.arm2Angle;
-	//double theta =
+		
 	  #if defined(DEBUG) || defined(BRIEF_LOG_IKM)  
 	    Serial.println("InverseKinematics::convertAngleToPosXYZ 'back' output:  gripPosition (X,Y,Z) = ("+String(gripPosition.gripX)+", "+String(gripPosition.gripY)+", "+String(gripPosition.gripZ)+" ), Angles (Spin, Tilt, Open) = ("+String(gripPosition.gripSpinAngle) +", "+String(gripPosition.gripTiltAngle)+", "+String(gripPosition.gripWidth)+"), duration="+String(gripPosition.duration)+", movesScriptEnd = "+String(gripPosition.movesScriptEnd));
     #endif
@@ -94,7 +94,7 @@ ArmServoAngles InverseKinematics::moveToPosXYZ(GripPositionXYZ positionXYZ) {
 
   double l = sqrt(positionXYZ.gripX * positionXYZ.gripX + positionXYZ.gripY * positionXYZ.gripY); // x and y extension 
   
-  l = l - 50; // 100mm = length of gripper when is in horizontal (flat) position
+  l = l; // 100mm = length of gripper when is in horizontal (flat) position
 
   if(l==0) {
     l=-0.2;
@@ -105,12 +105,14 @@ ArmServoAngles InverseKinematics::moveToPosXYZ(GripPositionXYZ positionXYZ) {
 
   double phi = atan(positionXYZ.gripZ/l) * M_180_DIV_PI;//(180 / MATH_PI);
 
-  double theta = acos((h/2)/125) * M_180_DIV_PI; //(180 / MATH_PI);    //120 mm = length of first and second part of arm (120 = brown and 120 = white arm with black bracket)
+  double theta = acos((h/2)/OneArmLength) * M_180_DIV_PI; //(180 / MATH_PI);    //120 mm = length of first and second part of arm (120 = brown and 120 = white arm with black bracket)
   
   double a1 = phi + theta; // angle for first part of the arm
   //double a2 = phi - theta; // angle for second part of the arm
   double a2 =  (0 - a1) + theta;
   //double a2 =  theta - a1;
+  //pictures here :  https://www.youtube.com/watch?v=Q-UeYEpwXXU
+
 
   double newGripTiltAngle = positionXYZ.gripTiltAngle + (0.7 * a1) -(0.9 * a2) + 30;
   //double newGripTiltAngle = positionXYZ.gripTiltAngle;
