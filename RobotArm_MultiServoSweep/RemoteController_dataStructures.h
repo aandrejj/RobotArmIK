@@ -15,6 +15,14 @@ struct RECEIVE_DATA_STRUCTURE{
     bool toggleTop; 
     int mode;  
 
+    bool navKeyUp    ;
+    bool navKeyDown  ;
+    bool navKeyLeft  ;
+    bool navKeyRight ;
+    bool navKeyMiddle;
+    bool navKeySet   ;
+    bool navKeyReset ;
+
     int16_t stick1_X;
     int16_t stick1_Y;
     bool    stick1_Btn;
