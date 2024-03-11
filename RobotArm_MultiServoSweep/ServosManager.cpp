@@ -23,9 +23,7 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
   }
   //--------------------updateServos()--------------------------------
   void ServosManager::updateServos(ArmServoAngles armServoAngles) {
-    #ifdef DEBUG 
-	  Serial.println("ServosManager::updateServos(): armServoAngles:  baseAngle = "+String(armServoAngles.baseAngle)+", arm1Angle = "+ String(armServoAngles.arm1Angle)+", arm2Angle = "+String(armServoAngles.arm2Angle)+", gripSpinAngle = "+ String(armServoAngles.gripSpinAngle)+", gripTiltAngle = "+String(armServoAngles.gripTiltAngle)+", gripAngle = "+String(armServoAngles.gripAngle)+"." );
-    #endif
+    
         //pwm.setPWM( 1, 0, armServoAngles.baseAngle);
         //pwm.setPWM( 2, 0, armServoAngles.arm1Angle);
 
@@ -35,25 +33,42 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
         //pwm.setPWM( 6, 0, armServoAngles.gripAngle);
 
-    if(armServoAngles.baseAngle != previousArmServoAngles.baseAngle) {
-      pwm.setPWM( 1, 0, angleToPulse(armServoAngles.baseAngle));
+    if(armServoAngles.errorOutOfWorkZone==true) {
+      Serial.println("ServosManager::updateServos(): SKIPPED errorOutOfWorkZone, errorMsg ="+String(armServoAngles.errorMsg)+". Using previous position.");
+      pwm.setPWM( 1, 0, angleToPulse(previousArmServoAngles.baseAngle));
+      pwm.setPWM( 2, 0, angleToPulse(previousArmServoAngles.arm1Angle));
+
+      pwm.setPWM( 3, 0, angleToPulse(previousArmServoAngles.arm2Angle));
+      pwm.setPWM( 4, 0, angleToPulse(previousArmServoAngles.gripSpinAngle));
+      pwm.setPWM( 5, 0, angleToPulse(previousArmServoAngles.gripTiltAngle));
+
+      pwm.setPWM( 6, 0, angleToPulse(previousArmServoAngles.gripAngle));
+    } 
+    else 
+    {
+      #ifdef DEBUG 
+	      Serial.println("ServosManager::updateServos(): armServoAngles:  baseAngle = "+String(armServoAngles.baseAngle)+", arm1Angle = "+ String(armServoAngles.arm1Angle)+", arm2Angle = "+String(armServoAngles.arm2Angle)+", gripSpinAngle = "+ String(armServoAngles.gripSpinAngle)+", gripTiltAngle = "+String(armServoAngles.gripTiltAngle)+", gripAngle = "+String(armServoAngles.gripAngle)+"." );
+      #endif
+      if(armServoAngles.baseAngle != previousArmServoAngles.baseAngle) {
+        pwm.setPWM( 1, 0, angleToPulse(armServoAngles.baseAngle));
+      }
+      if(armServoAngles.arm1Angle != previousArmServoAngles.arm1Angle) {
+        pwm.setPWM( 2, 0, angleToPulse(armServoAngles.arm1Angle));
+      }
+      if(armServoAngles.arm2Angle != previousArmServoAngles.arm2Angle) {
+        pwm.setPWM( 3, 0, angleToPulse(armServoAngles.arm2Angle));
+      }
+      if(armServoAngles.gripSpinAngle != previousArmServoAngles.gripSpinAngle) {
+        pwm.setPWM( 4, 0, angleToPulse(armServoAngles.gripSpinAngle));
+      }
+      if(armServoAngles.gripTiltAngle != previousArmServoAngles.gripTiltAngle) {
+        pwm.setPWM( 5, 0, angleToPulse(armServoAngles.gripTiltAngle));
+      }
+      if(armServoAngles.gripAngle != previousArmServoAngles.gripAngle) {
+        pwm.setPWM( 6, 0, angleToPulse(armServoAngles.gripAngle));
+      }
+      previousArmServoAngles = armServoAngles;
     }
-    if(armServoAngles.arm1Angle != previousArmServoAngles.arm1Angle) {
-      pwm.setPWM( 2, 0, angleToPulse(armServoAngles.arm1Angle));
-    }
-    if(armServoAngles.arm2Angle != previousArmServoAngles.arm2Angle) {
-      pwm.setPWM( 3, 0, angleToPulse(armServoAngles.arm2Angle));
-    }
-    if(armServoAngles.gripSpinAngle != previousArmServoAngles.gripSpinAngle) {
-      pwm.setPWM( 4, 0, angleToPulse(armServoAngles.gripSpinAngle));
-    }
-    if(armServoAngles.gripTiltAngle != previousArmServoAngles.gripTiltAngle) {
-      pwm.setPWM( 5, 0, angleToPulse(armServoAngles.gripTiltAngle));
-    }
-    if(armServoAngles.gripAngle != previousArmServoAngles.gripAngle) {
-      pwm.setPWM( 6, 0, angleToPulse(armServoAngles.gripAngle));
-    }
-    previousArmServoAngles = armServoAngles;
   }
   //--------------------end of updateServo-----------------------------
 
@@ -100,6 +115,8 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 	  previousArmServoAngles.gripAngle      = pservo6Pos; //ruka otvorena
     previousArmServoAngles.duration       = 200;
 	  previousArmServoAngles.movesScriptEnd = false;
+    previousArmServoAngles.errorOutOfWorkZone = false;
+    previousArmServoAngles.errorMsg = "";
 
 	  ArmServoAngles currentServoAngles;
 	  
