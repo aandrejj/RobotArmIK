@@ -16,6 +16,7 @@
 
 #define MATH_PI     3.14159265
 #define M_180_DIV_PI 57.29577951
+#define OneArmLength  120
 
 class InverseKinematics {
 public:

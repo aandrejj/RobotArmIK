@@ -95,14 +95,6 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
       Serial.println("ServosManager::ServoInitialization:  Robot arm initial position");
     #endif
 	  
-	  //delay(20);
-    //pwm.setPWM( 1, 0, angleToPulse(pservo1Pos));
-    //pwm.setPWM( 2, 0, angleToPulse(pservo2Pos));
-    //pwm.setPWM( 3, 0, angleToPulse(pservo3Pos));
-    //pwm.setPWM( 4, 0, angleToPulse(pservo4Pos));
-    //pwm.setPWM( 5, 0, angleToPulse(pservo5Pos));
-    //pwm.setPWM( 6, 0, angleToPulse(pservo6Pos));
-      
 	  #if defined(DEBUG) || defined(BRIEF_LOG) 
 	    //Serial.println("ServosManager::ServoInitialization: Servos positioned to default positions");
     #endif
