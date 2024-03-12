@@ -22,6 +22,8 @@ typedef struct {
   double duration;
   bool movesScriptEnd;
   bool showLog;
+  bool errorOutOfWorkZone;
+  String errorMsg;
 }GripPositionXYZ;
 
 typedef struct {
@@ -33,6 +35,8 @@ typedef struct {
   double gripAngle;
   double duration;
   bool movesScriptEnd;
+  bool errorOutOfWorkZone;
+  String errorMsg;
 } ArmServoAngles;
 
 typedef struct {
