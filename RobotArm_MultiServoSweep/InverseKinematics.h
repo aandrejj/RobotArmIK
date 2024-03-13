@@ -30,8 +30,8 @@ public:
   
   int microsecondsToAngle(double microseconds);
 
-  ArmServoAngles moveToAngle(double b, double a1, double a2, double gripSpinAngle, double gripTiltAngle, double g, double duration, bool showLog);
-  ArmServoAngles moveToAngle(double b, double a1, double a2, double gripSpinAngle, double gripTiltAngle, double g, double duration, bool showLog, bool errorOutOfWorkZone, String errorMsg);
+  ArmServoAngles moveToAngle(double b, double a1, double beta, double gripSpinAngle, double gripTiltAngle, double g, double duration, bool showLog);
+  ArmServoAngles moveToAngle(double b, double a1, double beta, double gripSpinAngle, double gripTiltAngle, double g, double duration, bool showLog, bool errorOutOfWorkZone, String errorMsg);
 
   ArmServoAngles moveToPos(double x, double y, double z, double gripSpinAngle, double gripTiltAngle, double g, bool movesScriptEnd, double duration);
 
