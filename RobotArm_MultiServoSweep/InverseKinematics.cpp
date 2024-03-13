@@ -1,8 +1,6 @@
 #include "InverseKinematics.h"
 #include "Arduino.h"
 //#include <ArmServos.h>
-#define OneArmLength  120
-
 InverseKinematics::InverseKinematics() {
 }
 
@@ -67,27 +65,32 @@ GripPositionXYZ InverseKinematics::convertAngleToPosXYZ(ArmServoAngles armServoA
 	return gripPosition;
 }
 //--------------------------------------------------------------------------------------------------------
-ArmServoAngles InverseKinematics::moveToAngle(double b, double a1, double a2, double gripSpinAngle, double gripTiltAngle, double g, double duration, bool showLog) {
-  return InverseKinematics::moveToAngle (b, a1, a2, gripSpinAngle, gripTiltAngle, g, duration, showLog,false, "");
+ArmServoAngles InverseKinematics::moveToAngle(double b, double a1, double beta, double gripSpinAngle, double gripTiltAngle, double g, double duration, bool showLog) {
+  return InverseKinematics::moveToAngle (b, a1, beta, gripSpinAngle, gripTiltAngle, g, duration, showLog,false, "");
 }  
-ArmServoAngles InverseKinematics::moveToAngle(double b, double a1, double a2, double gripSpinAngle, double gripTiltAngle, double g, double duration, bool showLog, bool errorOutOfWorkZone, String errorMsg) {
+ArmServoAngles InverseKinematics::moveToAngle(double b, double a1, double beta, double gripSpinAngle, double gripTiltAngle, double g, double duration, bool showLog, bool errorOutOfWorkZone, String errorMsg) {
   
   //https://www.arduino.cc/reference/en/libraries/servo/writemicroseconds/
   //value of 1000 is fully counter-clockwise, 2000 is fully clockwise, and 1500 is in the middle.
   //so that servos often respond to values between 700 and 2300.
   ArmServoAngles armServoAngles;
-  if(errorOutOfWorkZone == true) {
+    //#if defined(DEBUG)  || defined(BRIEF_LOG_IKM) 
+    if(showLog==true){
+      Serial.print("InverseKinematics::moveToAngle()Input: (b, a1, beta), grip(SpinAngle,TiltAngle,g) = ");
+      Serial.print("(" + String(b)+", "+String(a1)+", "+String(beta)+"), ");
+      Serial.print("grip("+String(gripSpinAngle)+", "+String(gripTiltAngle)+", "+String(g)+"), ");
+      Serial.print("errorOutOfWorkZone = "+String(errorOutOfWorkZone)+", errorMsg = '"+String(errorMsg)+"'. ");
+    }
+    //#endif
+    
     armServoAngles.errorOutOfWorkZone = errorOutOfWorkZone;
     armServoAngles.errorMsg = errorMsg;
+  if(errorOutOfWorkZone == true) {
     Serial.print("InverseKinematics::moveToAngle() errorOutOfWorkZone: errorMsg = "+errorMsg +".  SKIP");
   } else {
-    #if defined(DEBUG)  || defined(BRIEF_LOG_IKM) 
-      Serial.print("InverseKinematics::moveToAngle()Input: (b, a1, a2), grip(SpinAngle,TiltAngle,g) = (" + String(b)+", "+String(a1)+", "+String(a2)+"), grip("+String(gripSpinAngle)+", "+String(gripTiltAngle)+", "+String(g)+"). ");
-    #endif
-    
-    armServoAngles.baseAngle     = (b + 90);
-    armServoAngles.arm1Angle     = a1; //(180 - a1);
-    armServoAngles.arm2Angle     = (-40 + a2);
+    armServoAngles.baseAngle     = (b);
+    armServoAngles.arm1Angle     = (180 - a1);
+    armServoAngles.arm2Angle     = beta; //(-40 + a2);
 
     armServoAngles.gripSpinAngle = (gripSpinAngle + 90);
     armServoAngles.gripTiltAngle = (gripTiltAngle + 90);
@@ -98,7 +101,8 @@ ArmServoAngles InverseKinematics::moveToAngle(double b, double a1, double a2, do
       Serial.println(" |   Outut: armServoAngles=("+String(armServoAngles.baseAngle)+", "+String(armServoAngles.arm1Angle)+", "+String(armServoAngles.arm2Angle)+") . Angles = ("+String(armServoAngles.gripSpinAngle)+","+String(armServoAngles.gripTiltAngle)+","+String(armServoAngles.gripAngle)+"),  g = "+String(g)+".");
     #endif
     if (showLog==true){ 
-      Serial.println(" |   moveToAngle:Outut: armServoAngles=("+String(armServoAngles.baseAngle)+", "+String(armServoAngles.arm1Angle)+", "+String(armServoAngles.arm2Angle)+") . Angles = ("+String(armServoAngles.gripSpinAngle)+","+String(armServoAngles.gripTiltAngle)+","+String(armServoAngles.gripAngle)+"),  g = "+String(g)+".");
+      Serial.print(" |   moveToAngle:Outut: armServoAngles=("+String(armServoAngles.baseAngle)+", "+String(armServoAngles.arm1Angle)+", "+String(armServoAngles.arm2Angle)+") . Angles = ("+String(armServoAngles.gripSpinAngle)+","+String(armServoAngles.gripTiltAngle)+","+String(armServoAngles.gripAngle)+"),  g = "+String(g)+", ");
+      Serial.println("errorOutOfWorkZone = "+String(armServoAngles.errorOutOfWorkZone)+", errorMsg = '"+String(armServoAngles.errorMsg)+"'. ");
     }
   }
   return armServoAngles;
@@ -107,6 +111,7 @@ ArmServoAngles InverseKinematics::moveToAngle(double b, double a1, double a2, do
 //----------------------------------------------------------------------------------------
 ArmServoAngles InverseKinematics::moveToPosXYZ(GripPositionXYZ positionXYZ) {
   if(positionXYZ.errorOutOfWorkZone == true) {
+    Serial.println("InverseKinematics::moveToPosXYZ: @1  positionXYZ.errorOutOfWorkZone = true. fast return. End");
     return moveToAngle(0, 0, 0, positionXYZ.gripSpinAngle, 0, 0, positionXYZ.duration, positionXYZ.showLog, positionXYZ.errorOutOfWorkZone , positionXYZ.errorMsg);
   } else {
     #if defined(DEBUG)
@@ -119,6 +124,7 @@ ArmServoAngles InverseKinematics::moveToPosXYZ(GripPositionXYZ positionXYZ) {
     double theta = 0;
     double a1 = 0;
     double a2 = 0;
+    double  beta =0 ;  //angle between arms (bones).  0=straight (full length) , 180 = fully bended (minimal distance between base and endpoint)
     double newGripTiltAngle = 0;
     double gripAngle = 0;
     //------------------
@@ -147,17 +153,24 @@ ArmServoAngles InverseKinematics::moveToPosXYZ(GripPositionXYZ positionXYZ) {
     } else {
       h = sqrt (l*l + positionXYZ.gripZ * positionXYZ.gripZ);
 
+      if(h > (2*OneArmLength)) {
+        Serial.print("InverseKinematics::moveToPosXYZ: WARNING. h is longer than arm Length !!!h Unable to use h. ");
+        positionXYZ.errorOutOfWorkZone = true;
+        positionXYZ.errorMsg = "h> 2*ArmLength";
+      }
+
       phi = atan(positionXYZ.gripZ/l) * M_180_DIV_PI;//(180 / MATH_PI);
 
       theta = acos((h/2)/OneArmLength) * M_180_DIV_PI; //(180 / MATH_PI);    //120 mm = length of first and second part of arm (120 = brown and 120 = white arm with black bracket)
     
       a1 = phi + theta; // angle for first part of the arm
-    //double a2 = phi - theta; // angle for second part of the arm
-      a2 =  (180 - a1) + theta;
+      a2 = phi - theta; // angle for second part of the arm against horizont level.
+      beta = 180 - theta - theta;
+      //a2 =  (180 - a1) + theta;
     //double a2 =  theta - a1;
     //pictures here :  https://www.youtube.com/watch?v=Q-UeYEpwXXU
 
-      newGripTiltAngle = positionXYZ.gripTiltAngle + (0.7 * a1) -(0.9 * a2) + 30;
+      newGripTiltAngle = (positionXYZ.gripTiltAngle + (a1)) +(beta);
       //double newGripTiltAngle = positionXYZ.gripTiltAngle;
 
       gripAngle = asin((positionXYZ.gripWidth/2)/30) * M_180_DIV_PI;//(180 / MATH_PI);
@@ -166,15 +179,16 @@ ArmServoAngles InverseKinematics::moveToPosXYZ(GripPositionXYZ positionXYZ) {
         Serial.println("InverseKinematics::moveToPos(): b             = "+String(b )+".");
         Serial.println("InverseKinematics::moveToPos(): a1            = "+String(a1)+".");
         Serial.println("InverseKinematics::moveToPos(): a2            = "+String(a2)+".");
+        Serial.println("InverseKinematics::moveToPos(): beta            = "+String(beta)+".");
         //Serial.println("InverseKinematics::moveToPos(): gripSpinAngle = "+String(gripSpinAngle)+".");
         Serial.println("InverseKinematics::moveToPos(): newGripTiltAngle = "+String(newGripTiltAngle)+".");
         Serial.println("InverseKinematics::moveToPos(): gripAngle     = "+String(gripAngle)+".");
       #endif
     }
     if (positionXYZ.showLog) {
-      Serial.print("InverseKinematics::moveToPosXYZ() b:"+String(b)+", l:"+String(l)+", h:"+String(h)+", phi:"+String(phi)+", theta:"+String(theta)+", a1:"+String(a1)+", a2:"+String(a2)+", g:"+String(gripAngle)+".");
+      Serial.print(" InverseKinematics::moveToPosXYZ() @END_OK b:"+String(b)+", l:"+String(l)+", h:"+String(h)+", phi:"+String(phi)+", theta:"+String(theta)+", a1:"+String(a1)+", beta:"+String(beta)+", a2:"+String(a2)+", g:"+String(gripAngle)+".");
     }
   
-    return moveToAngle(b, a1, a2, positionXYZ.gripSpinAngle, newGripTiltAngle, gripAngle, positionXYZ.duration, positionXYZ.showLog, positionXYZ.errorOutOfWorkZone , positionXYZ.errorMsg);
+    return moveToAngle(b, a1, beta, positionXYZ.gripSpinAngle, newGripTiltAngle, gripAngle, positionXYZ.duration, positionXYZ.showLog, positionXYZ.errorOutOfWorkZone , positionXYZ.errorMsg);
   }
 }

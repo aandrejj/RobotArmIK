@@ -62,6 +62,19 @@ Open Dog  Part1
 #define SERVO_MAX   615                // value of 135 is fully counter-clockwise, 615 is fully clockwise.
 */
 
+#define MIN_X -240
+#define MAX_X  240
+#define MIN_Y -240
+#define MAX_Y  240
+#define MIN_Z -240
+#define MAX_Z  240
+#define MIN_W -40
+#define MAX_W  50
+
+#define buttonStepX 1.0;
+#define buttonStepY 1.0;
+#define buttonStepZ 5.0;
+
 // Outcomment line below for HM-10, HM-19 etc
 //#define HIGHSPEED   // Most modules are only 9600, although you can reconfigure this
 #define EN_PIN_HIGH   // You can use this for HC-05 so you don't have to hold the small button on power-up to get to AT-mode
@@ -355,18 +368,6 @@ int bluetoothButtonHandler_by_loop(BluetoothOutputData bluetoothOutputData){
   return runRobotArm;
 }
 
-#define MIN_X   0
-#define MAX_X  89
-#define MIN_Y -45
-#define MAX_Y  45
-#define MIN_Z -89
-#define MAX_Z  89
-#define MIN_W -40
-#define MAX_W  50
-
-#define buttonStepX 1.0;
-#define buttonStepY 1.0;
-#define buttonStepZ 1.0;
 GripPositionXYZ addButtonsToPosition(GripPositionXYZ _currentGripPosition, BluetoothOutputData bluetoothOutputData, BluetoothOutputData previousBluetoothOutputData){
   bool changed = false;
   if(bluetoothOutputData.navKeyMiddle == 0) {
@@ -459,7 +460,7 @@ GripPositionXYZ addMovementsToPosition(GripPositionXYZ _currentGripPosition, Blu
   #if defined(DEBUG)  || defined(BRIEF_LOG) || defined(MOVEMENT_LOG)
     if(xIncrement!= 0  || yIncrement != 0 || zIncrement != 0 || wIncrement != 0) {
       ////_currentGripPosition.showLog = true;
-      Serial.print("addMovementsToPosition: currentGripPosition = {"+ String(_currentGripPosition.gripX)+", "+ String(_currentGripPosition.gripY)+", "+ String(_currentGripPosition.gripZ)+", "+ String(_currentGripPosition.gripSpinAngle)+", "+ String(_currentGripPosition.gripTiltAngle)+", "+ String(_currentGripPosition.gripWidth)+"}.");
+      Serial.println("addMovementsToPosition: currentGripPosition = {"+ String(_currentGripPosition.gripX)+", "+ String(_currentGripPosition.gripY)+", "+ String(_currentGripPosition.gripZ)+", "+ String(_currentGripPosition.gripSpinAngle)+", "+ String(_currentGripPosition.gripTiltAngle)+", "+ String(_currentGripPosition.gripWidth)+"}.");
     }
   #endif
 
@@ -557,9 +558,10 @@ void servo_initialization_by_loop() {
     #endif
     startArmAngles = servosManager.ServoInitialization(servo1PPos, servo2PPos, servo3PPos, servo4PPos, servo5PPos, servo6PPos,SERVO_MIN_MILISEC ,SERVO_MAX_MILISEC );
     currentGripPosition = inverseKinematics.convertAngleToPosXYZ(startArmAngles);
-    #if defined(DEBUG) || defined(BRIEF_LOG)
-      Serial.println("servo_initialization_by_loop():  currentGripPosition (X,Y,Z) = ("+String(currentGripPosition.gripX)+", "+String(currentGripPosition.gripY)+", "+String(currentGripPosition.gripZ)+" ), Angles (Spin, Tilt, Open) = ("+String(currentGripPosition.gripSpinAngle) +", "+String(currentGripPosition.gripTiltAngle)+", "+String(currentGripPosition.gripWidth)+"), duration="+String(currentGripPosition.duration)+", movesScriptEnd = "+String(currentGripPosition.movesScriptEnd));     
-    #endif
+    //#if defined(DEBUG) || defined(BRIEF_LOG)
+      Serial.println("servo_initialization_by_loop():  currentGripPosition (X,Y,Z) = ("+String(currentGripPosition.gripX)+", "+String(currentGripPosition.gripY)+", "+String(currentGripPosition.gripZ)+" ), Angles (Spin, Tilt, Open) = ("+String(currentGripPosition.gripSpinAngle) +", "+String(currentGripPosition.gripTiltAngle)+", "+String(currentGripPosition.gripWidth)+"), duration="+String(currentGripPosition.duration)+", movesScriptEnd = "+String(currentGripPosition.movesScriptEnd)+", errorOutOfWorkZone = "+String(currentGripPosition.errorOutOfWorkZone));
+    //#endif
+    currentGripPosition.showLog = true;
     currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
     servosManager.updateServos(currentArmAngles);   // send pulses to servos.  update servos according to InverseKinematics Values
     initializationDone = 1;
