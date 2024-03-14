@@ -14,10 +14,10 @@
 #define SERVOMAX1  630
 
 #define SERVOMIN2  180
-#define SERVOMAX2  640
+#define SERVOMAX2  610
 
-#define SERVOMIN3  160
-#define SERVOMAX3  650
+#define SERVOMIN3  120
+#define SERVOMAX3  620
 
 #define SERVOMIN4  120
 #define SERVOMAX4  620

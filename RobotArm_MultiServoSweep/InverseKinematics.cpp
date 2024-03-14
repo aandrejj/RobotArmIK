@@ -133,9 +133,14 @@ ArmServoAngles InverseKinematics::moveToPosXYZ(GripPositionXYZ positionXYZ) {
     l = sqrt(positionXYZ.gripX * positionXYZ.gripX + positionXYZ.gripY * positionXYZ.gripY); // x and y extension 
         
     if(l < 0) {
-      Serial.print("InverseKinematics::moveToPosXYZ: WARNING. l is longer than arm Length !!!h Unable to use l. ");
+      Serial.print("InverseKinematics::moveToPosXYZ: WARNING. l is smaller than zero !!!h Unable to use l. ");
       positionXYZ.errorOutOfWorkZone = true;
       positionXYZ.errorMsg = "l Negative";
+    }
+    if(l < 20) {
+      Serial.print("InverseKinematics::moveToPosXYZ: WARNING. l is smaller than minimum !!!h Unable to use l. ");
+      positionXYZ.errorOutOfWorkZone = true;
+      positionXYZ.errorMsg = "l too small";
     }
     if(l==0) {
       //l=0.2;
@@ -170,20 +175,11 @@ ArmServoAngles InverseKinematics::moveToPosXYZ(GripPositionXYZ positionXYZ) {
     //double a2 =  theta - a1;
     //pictures here :  https://www.youtube.com/watch?v=Q-UeYEpwXXU
 
-      newGripTiltAngle = (positionXYZ.gripTiltAngle + (a1)) +(beta);
+      //newGripTiltAngle = (positionXYZ.gripTiltAngle - (1.1 * a1)) +(0.8 * beta);
+      newGripTiltAngle = (positionXYZ.gripTiltAngle + ((180 - a1) + (beta - 180)));
       //double newGripTiltAngle = positionXYZ.gripTiltAngle;
 
-      gripAngle = asin((positionXYZ.gripWidth/2)/30) * M_180_DIV_PI;//(180 / MATH_PI);
-    
-      #ifdef DEBUG 
-        Serial.println("InverseKinematics::moveToPos(): b             = "+String(b )+".");
-        Serial.println("InverseKinematics::moveToPos(): a1            = "+String(a1)+".");
-        Serial.println("InverseKinematics::moveToPos(): a2            = "+String(a2)+".");
-        Serial.println("InverseKinematics::moveToPos(): beta            = "+String(beta)+".");
-        //Serial.println("InverseKinematics::moveToPos(): gripSpinAngle = "+String(gripSpinAngle)+".");
-        Serial.println("InverseKinematics::moveToPos(): newGripTiltAngle = "+String(newGripTiltAngle)+".");
-        Serial.println("InverseKinematics::moveToPos(): gripAngle     = "+String(gripAngle)+".");
-      #endif
+      gripAngle = asin((positionXYZ.gripWidth/2)/30) * M_180_DIV_PI;//(180 / MATH_PI);    
     }
     if (positionXYZ.showLog) {
       Serial.print(" InverseKinematics::moveToPosXYZ() @END_OK b:"+String(b)+", l:"+String(l)+", h:"+String(h)+", phi:"+String(phi)+", theta:"+String(theta)+", a1:"+String(a1)+", beta:"+String(beta)+", a2:"+String(a2)+", g:"+String(gripAngle)+".");
