@@ -143,7 +143,7 @@ int servo1PPos = 85; //zakladna
 int servo2PPos = 50;//160;//spodne hnede rameno
 int servo3PPos = 13; //horne  biela rameno
 int servo4PPos = 0;//ruka nabok  100 = zhruba vodorovne
-int servo5PPos = 25; //ruka hore
+int servo5PPos = 0; //ruka hore
 int servo6PPos = 110; //ruka otvorena= 100, zatvorena = 60
 
 unsigned long currentMillis;
@@ -439,23 +439,12 @@ GripPositionXYZ addMovementsToPosition(GripPositionXYZ _currentGripPosition, Blu
   zIncrement = balancedBluetoothOutputData.stick2_Y / positionDivider;
   wIncrement = balancedBluetoothOutputData.stick2_X / positionDivider;
 
-  //_currentGripPosition.gripX     = _currentGripPosition.gripX     + xIncrement;
-  //_currentGripPosition.gripY     = _currentGripPosition.gripY     + yIncrement;
-  //_currentGripPosition.gripZ     = _currentGripPosition.gripZ     + zIncrement;
-  //_currentGripPosition.gripWidth = _currentGripPosition.gripWidth + wIncrement;
- // _currentGripPosition = maxMinLimiter(_currentGripPosition);
-
-
   _currentGripPosition.gripX     = constrain((_currentGripPosition.gripX     + xIncrement), MIN_X, MAX_X);
   _currentGripPosition.gripY     = constrain((_currentGripPosition.gripY     + yIncrement), MIN_Y, MAX_Y);
   _currentGripPosition.gripZ     = constrain((_currentGripPosition.gripZ     + zIncrement), MIN_Z, MAX_Z);
   _currentGripPosition.gripWidth = constrain((_currentGripPosition.gripWidth + wIncrement), MIN_W, MAX_W);
 
-//  _currentGripPosition.gripX     = constrain((_currentGripPosition.gripX + (balancedBluetoothOutputData.stick1_X / positionDivider)), -89 , 89);
-//  _currentGripPosition.gripY     = constrain((_currentGripPosition.gripY + (balancedBluetoothOutputData.stick1_Y / positionDivider)), -89 , 89);
-//  _currentGripPosition.gripZ     = constrain((_currentGripPosition.gripZ + (balancedBluetoothOutputData.stick2_Y / positionDivider)), -89 , 89);
-//  _currentGripPosition.gripWidth = constrain((_currentGripPosition.gripWidth + (balancedBluetoothOutputData.stick2_X / positionDivider)), -40 , 50);
-
+  //_currentGripPosition.showLog = true;
 
   #if defined(DEBUG)  || defined(BRIEF_LOG) || defined(MOVEMENT_LOG)
     if(xIncrement!= 0  || yIncrement != 0 || zIncrement != 0 || wIncrement != 0) {
@@ -467,13 +456,6 @@ GripPositionXYZ addMovementsToPosition(GripPositionXYZ _currentGripPosition, Blu
   return _currentGripPosition;
 }
 
-GripPositionXYZ  maxMinLimiter(GripPositionXYZ _currentGripPosition) {
-  _currentGripPosition.gripX     = constrain(_currentGripPosition.gripX, 0 , 89);
-  _currentGripPosition.gripY     = constrain(_currentGripPosition.gripY, -89 , 89);
-  _currentGripPosition.gripZ     = constrain(_currentGripPosition.gripZ, -89 , 89);
-  _currentGripPosition.gripWidth = constrain(_currentGripPosition.gripWidth, -40 , 50);
-
-}
 //-------------------bluetooth_movement_by_loop---------------------
 void bluetooth_movement_by_loop(){
   if(bluetoothOutputData.dataReceived) {
