@@ -145,10 +145,18 @@ ArmServoAngles InverseKinematics::moveToPosXYZ(GripPositionXYZ positionXYZ) {
       positionXYZ.errorOutOfWorkZone = true;
       positionXYZ.errorMsg = "l Negative";
     }
-    if(l < 20) {
-      Serial.print("IK::moveToPosXYZ: WARNING. l is smaller than minimum !!!h Unable to use l. ");
-      positionXYZ.errorOutOfWorkZone = true;
-      positionXYZ.errorMsg = "l too small";
+    if(positionXYZ.gripZ<55) {
+      if( l < 30) {
+        Serial.print("IK::moveToPosXYZ: WARNING. l is smaller than minimum !!!h Unable to use l. ");
+        positionXYZ.errorOutOfWorkZone = true;
+        positionXYZ.errorMsg = "l too small.1";
+      }
+    } else {
+      if( l < 8) {
+        Serial.print("IK::moveToPosXYZ: WARNING. l is smaller than minimum !!!h Unable to use l. ");
+        positionXYZ.errorOutOfWorkZone = true;
+        positionXYZ.errorMsg = "l too small.2";
+      }
     }
     if(l==0) {
       //l=0.2;

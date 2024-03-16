@@ -121,6 +121,7 @@ BluetoothFactory bluetoothFactory;
 
 LinearRampXYZ linearRampXYZ;
 
+GripPositionXYZ previousGripPosition;
 GripPositionXYZ currentGripPosition;
 GripPositionXYZ targetGripPosition;
 
@@ -424,7 +425,7 @@ GripPositionXYZ addButtonsToPosition(GripPositionXYZ _currentGripPosition, Bluet
       _currentGripPosition.gripWidth = constrain(_currentGripPosition.gripWidth, MIN_W, MAX_W);
       
       //_currentGripPosition.showLog = true;
-      Serial.print("addButtonsToPosition: currentGripPosition = {"+ String(_currentGripPosition.gripX)+", "+ String(_currentGripPosition.gripY)+", "+ String(_currentGripPosition.gripZ)+", "+ String(_currentGripPosition.gripSpinAngle)+", "+ String(_currentGripPosition.gripTiltAngle)+", "+ String(_currentGripPosition.gripWidth)+"}.");
+      Serial.println("addButtonsToPosition: currentGripPosition = {"+ String(_currentGripPosition.gripX)+", "+ String(_currentGripPosition.gripY)+", "+ String(_currentGripPosition.gripZ)+", "+ String(_currentGripPosition.gripSpinAngle)+", "+ String(_currentGripPosition.gripTiltAngle)+", "+ String(_currentGripPosition.gripWidth)+"}.");
     }
     #endif
 
@@ -466,12 +467,31 @@ void bluetooth_movement_by_loop(){
     currentGripPosition = addButtonsToPosition(currentGripPosition, balancedBluetoothOutputData, previousBluetoothOutputData);
     currentGripPosition = addMovementsToPosition(currentGripPosition, balancedBluetoothOutputData);
 
+    if(currentGripPosition.errorOutOfWorkZone == true) {
+      currentGripPosition = previousGripPosition;
+      Serial.print("bluetooth_movement_by_loop: BackToPrevious position. | currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+"}.");
+    }
+
     #if defined(DEBUG)  || defined(BRIEF_LOG) || defined(MOVEMENT_LOG)
       //Serial.println(" |  NEW currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+"}.");
     #endif
+
     currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
+
+    if(currentArmAngles.errorOutOfWorkZone == true) {
+      currentGripPosition = previousGripPosition;
+      Serial.print("bluetooth_movement_by_loop: BackToPrevious position. | currentGripPosition = {"+ String(currentGripPosition.gripX)+", "+ String(currentGripPosition.gripY)+", "+ String(currentGripPosition.gripZ)+", "+ String(currentGripPosition.gripSpinAngle)+", "+ String(currentGripPosition.gripTiltAngle)+", "+ String(currentGripPosition.gripWidth)+"}.");
+      
+      currentArmAngles = inverseKinematics.moveToPosXYZ(currentGripPosition);
+    }
+
     currentGripPosition.showLog = false;
     servosManager.updateServos(currentArmAngles);   // send pulses to servos.  update servos according to InverseKinematics Values      
+
+    if(currentGripPosition.errorOutOfWorkZone == false) {
+      previousGripPosition = currentGripPosition;
+    }
+
   }
 }
 //-------------------end of bluetooth_movement_by_loop---------------------
