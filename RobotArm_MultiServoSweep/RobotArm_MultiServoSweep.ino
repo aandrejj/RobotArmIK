@@ -66,7 +66,7 @@ Open Dog  Part1
 #define MAX_X  240
 #define MIN_Y -240
 #define MAX_Y  240
-#define MIN_Z -240
+#define MIN_Z -110
 #define MAX_Z  240
 #define MIN_W -40
 #define MAX_W  50
@@ -104,7 +104,7 @@ int previous_state;
 
 //#define DEBUG         //debug logging
 //#define BRIEF_LOG     //just a few logs
-#define MOVEMENT_LOG
+//#define MOVEMENT_LOG
 
 Buttons buttons;
 InverseKinematics inverseKinematics;
@@ -423,7 +423,7 @@ GripPositionXYZ addButtonsToPosition(GripPositionXYZ _currentGripPosition, Bluet
       _currentGripPosition.gripZ     = constrain(_currentGripPosition.gripZ,     MIN_Z, MAX_Z);
       _currentGripPosition.gripWidth = constrain(_currentGripPosition.gripWidth, MIN_W, MAX_W);
       
-      _currentGripPosition.showLog = true;
+      //_currentGripPosition.showLog = true;
       Serial.print("addButtonsToPosition: currentGripPosition = {"+ String(_currentGripPosition.gripX)+", "+ String(_currentGripPosition.gripY)+", "+ String(_currentGripPosition.gripZ)+", "+ String(_currentGripPosition.gripSpinAngle)+", "+ String(_currentGripPosition.gripTiltAngle)+", "+ String(_currentGripPosition.gripWidth)+"}.");
     }
     #endif
@@ -448,7 +448,7 @@ GripPositionXYZ addMovementsToPosition(GripPositionXYZ _currentGripPosition, Blu
 
   #if defined(DEBUG)  || defined(BRIEF_LOG) || defined(MOVEMENT_LOG)
     if(xIncrement!= 0  || yIncrement != 0 || zIncrement != 0 || wIncrement != 0) {
-      ////_currentGripPosition.showLog = true;
+      //_currentGripPosition.showLog = true;
       Serial.println("addMovementsToPosition: currentGripPosition = {"+ String(_currentGripPosition.gripX)+", "+ String(_currentGripPosition.gripY)+", "+ String(_currentGripPosition.gripZ)+", "+ String(_currentGripPosition.gripSpinAngle)+", "+ String(_currentGripPosition.gripTiltAngle)+", "+ String(_currentGripPosition.gripWidth)+"}.");
     }
   #endif
